@@ -24,36 +24,41 @@ graph = {
 # print("ee", graph["n6"])
 
 
-playerLocation = ["n6"]
-# playerLocation = ["n5", "n7", "n15"]
-wumpusLocation = "n3"
-
+playerLocation = "n1"
+wumpusLocation = "n12"
 currLevel = 0
+distance = 0
 
 
 def getChildren(nodesAtLevel, currLevel):
-    visited = []
-    currLevel += 1
+    visited = []  # set visited to empty again
+    currLevel += 1  # increase level number.
     for node in nodesAtLevel:
-        visited.extend(graph[node])
-        visited = list(set(visited))
-        print(node)
+        visited.extend(
+            graph[node]
+        )  # add the connecting nodes to the list of visited nodes.
+        visited = list(
+            set(visited)
+        )  # convert to set to remove duplicate nodes then convert back to list to keep extending
+        # print(node)
 
-    print("visited:", visited)
+    # print("visited:", visited)
+
     if (
         wumpusLocation not in visited
     ):  # check that the wumpus' location isn't in the set of nodes that were just added to visited
-        print("\n")
+        # print("\n")
         getChildren(
             visited, currLevel
         )  # call the function again to recursively search through each layer
-    # else:
-    #     print("Wumpus found %s nodes away" % currLevel)
     else:
+        print("Wumpus found %s nodes away from player" % currLevel)
         return currLevel
 
 
 if playerLocation != wumpusLocation:
-    r = getChildren(playerLocation, currLevel)
+    distance = getChildren([playerLocation], currLevel)
+else:
+    distance = 0
 
-print(r)
+print("returned", distance)
