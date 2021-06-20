@@ -1,4 +1,3 @@
-# Using a Python dictionary to act as an adjacency list
 graph = {
     "n1": ["n2", "n5", "n8"],
     "n2": ["n1", "n3", "n10"],
@@ -22,35 +21,39 @@ graph = {
     "n20": ["n13", "n16", "n19"],
 }
 
-playerLocation = "n6"
-wumpusLocation = "n19"
+# print("ee", graph["n6"])
 
 
+playerLocation = ["n6"]
+# playerLocation = ["n5", "n7", "n15"]
+wumpusLocation = "n3"
 
-counter = 0
-done = False
-
-visited = []  # List to keep track of visited nodes.
-queue = []  # Initialize a queue
-
-
-def bfs(visited, graph, node, counter, done):
-    visited.append(node)
-    queue.append(node)
-
-    while queue:
-        s = queue.pop(0)
-        if s == wumpusLocation:
-            print("found wumpus at", s, "counter=", counter)
-        else:
-            print(s)  # , end=" ")
-
-        for neighbour in graph[s]:
-
-            if neighbour not in visited:
-                visited.append(neighbour)
-                queue.append(neighbour)
+currLevel = 0
 
 
-# Driver Code
-bfs(visited, graph, playerLocation, counter, done)
+def getChildren(nodesAtLevel, currLevel):
+    visited = []
+    currLevel += 1
+    for node in nodesAtLevel:
+        visited.extend(graph[node])
+        visited = list(set(visited))
+        print(node)
+
+    print("visited:", visited)
+    if (
+        wumpusLocation not in visited
+    ):  # check that the wumpus' location isn't in the set of nodes that were just added to visited
+        print("\n")
+        getChildren(
+            visited, currLevel
+        )  # call the function again to recursively search through each layer
+    # else:
+    #     print("Wumpus found %s nodes away" % currLevel)
+    else:
+        return currLevel
+
+
+if playerLocation != wumpusLocation:
+    r = getChildren(playerLocation, currLevel)
+
+print(r)
