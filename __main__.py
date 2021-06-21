@@ -17,7 +17,7 @@ def getChildren(graph, nodesAtLevel, wumpusLocation, currLevel):
         wumpusLocation not in visited
     ):  # check that the wumpus' location isn't in the set of nodes that were just added to visited
         # print("\n")
-        getChildren(
+        return getChildren(
             graph, visited, wumpusLocation, currLevel
         )  # call the function again to recursively search through each layer
 
@@ -62,8 +62,7 @@ def main():
     else:
         distance = 0
 
-    print("returned", distance)
-    print(currLevel)
+    print("distance:", distance)
 
 
 main()
