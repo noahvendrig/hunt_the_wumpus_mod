@@ -47,7 +47,6 @@ def findHazard(graph):
 
 def changeNode(graph, currNode, direction):  # direction: 0 = left, 1 = middle, 2=right
     index = random.randint(0, 2)
-    print("index", index)
     nextNode = graph[currNode][index]
     print("moving from %s to %s" % (currNode, nextNode))
 
@@ -80,20 +79,47 @@ def main():
     }
 
     pygame.init()
+    arialFont = pygame.font.SysFont("Arial", 30)
+
+    # w = 1920
+    # h = 1010
     w = 800
-    h = 800
+    h = 600
     bgColour = (255, 255, 255)
     running = True
 
     pygame.display.set_caption("Hunt the Wumpus")
     screen = pygame.display.set_mode((w, h))
+    fontColour = (0, 0, 0)
+
+    # font = ("./arial.tff", 32)
+    font = pygame.font.Font("freesansbold.ttf", 32)
+
+    def showText(currNode):
+        roomL_X = (w * 0.1) - 100
+        roomL_Y = h / 2
+        roomM_X = (w / 2) - 50
+        roomM_Y = h * 0.1
+        roomR_X = (w * 0.9) - 25
+        roomR_Y = h / 2
+
+        RoomL_Txt = font.render(("Room " + graph[currNode][0][1]), True, fontColour)
+        screen.blit(RoomL_Txt, (roomL_X, roomL_Y))
+
+        RoomM_Txt = font.render(("Room " + graph[currNode][1][1]), True, fontColour)
+        screen.blit(RoomM_Txt, (roomM_X, roomM_Y))
+
+        RoomR_Txt = font.render(("Room " + graph[currNode][2][1]), True, fontColour)
+        screen.blit(RoomR_Txt, (roomR_X, roomR_Y))
 
     currNode = "n1"
     while running:
+        screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
-            # if event.type == pygame.QUIT:
-            #     running = False
-            #     pygame.quit()
+            if event.type == pygame.QUIT:  # close when x button hit
+                running = False
+                pygame.quit()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
@@ -106,8 +132,9 @@ def main():
                 if event.key == pygame.K_RIGHT:
                     currNode = changeNode(graph, currNode, 2)
 
-        screen.fill(bgColour)
-        pygame.display.flip()
+        showText(currNode)
+        # pygame.display.update()
+        pygame.display.update()
 
 
 main()
