@@ -79,12 +79,11 @@ def main():
     }
 
     pygame.init()
-    arialFont = pygame.font.SysFont("Arial", 30)
+    # arialFont = pygame.font.SysFont("Arial", 30)
 
-    # w = 1920
-    # h = 1010
-    w = 800
-    h = 600
+    w = 1920
+    h = 1010
+
     bgColour = (255, 255, 255)
     running = True
 
