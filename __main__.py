@@ -1,6 +1,4 @@
-
-
-def getChildren(graph, nodesAtLevel, wumpusLocation, currLevel):
+def getChildren(graph, nodesAtLevel, hazardLocation, currLevel):
     visited = []  # set visited to empty again
     currLevel += 1  # increase level number.
     for node in nodesAtLevel:
@@ -14,19 +12,18 @@ def getChildren(graph, nodesAtLevel, wumpusLocation, currLevel):
 
     # print("visited:", visited)
     if (
-        wumpusLocation not in visited
-    ):  # check that the wumpus' location isn't in the set of nodes that were just added to visited
+        hazardLocation not in visited
+    ):  # check that the hazard' location isn't in the set of nodes that were just added to visited
         # print("\n")
         return getChildren(
-            graph, visited, wumpusLocation, currLevel
+            graph, visited, hazardLocation, currLevel
         )  # call the function again to recursively search through each layer
 
     else:
-        print("Wumpus found %s nodes away from player" % currLevel)
         return currLevel
 
 
-def main():
+def findHazard():
 
     graph = {
         "n1": ["n2", "n5", "n8"],
@@ -52,17 +49,16 @@ def main():
     }
 
     playerLocation = "n1"
-    wumpusLocation = "n12"
+    hazardLocation = "n12"
     currLevel = 0
     distance = 0
 
-    if playerLocation != wumpusLocation:
-        distance = getChildren(
-            graph, [playerLocation], wumpusLocation, currLevel)
+    if playerLocation != hazardLocation:
+        distance = getChildren(graph, [playerLocation], hazardLocation, currLevel)
     else:
         distance = 0
 
-    print("distance:", distance)
+    print("Hazard found %s nodes away from player" % distance)
 
 
-main()
+findHazard()
