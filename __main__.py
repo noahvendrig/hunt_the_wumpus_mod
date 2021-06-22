@@ -1,8 +1,9 @@
 import pygame
 from sys import exit
-# import numpy
+import numpy
 import random
 from pygame.locals import *
+import re
 
 
 def getChildren(graph, nodesAtLevel, hazardLocation, currLevel):
@@ -30,16 +31,13 @@ def getChildren(graph, nodesAtLevel, hazardLocation, currLevel):
         return currLevel
 
 
-def findHazard(graph):
+def findHazard(graph, playerLocation, hazardLocation):
 
-    playerLocation = "n1"
-    hazardLocation = "n12"
     currLevel = 0
     distance = 0
 
     if playerLocation != hazardLocation:
-        distance = getChildren(
-            graph, [playerLocation], hazardLocation, currLevel)
+        distance = getChildren(graph, [playerLocation], hazardLocation, currLevel)
     else:
         distance = 0
 
@@ -47,15 +45,71 @@ def findHazard(graph):
 
 
 def changeNode(graph, currNode, direction):  # direction: 0 = left, 1 = middle, 2=right
-    index = random.randint(0, 2)
-    nextNode = graph[currNode][index]
+    nextNode = graph[currNode][direction]
     print("moving from %s to %s" % (currNode, nextNode))
 
     return nextNode
 
 
+def showText(currNode, w, h, fontColour, font, screen, graph):
+    roomL_X = (w * 0.1) - 100
+    roomL_Y = h / 2
+    roomM_X = (w / 2) - 50
+    roomM_Y = h * 0.1
+    roomR_X = (w * 0.9) - 25
+    roomR_Y = h / 2
+
+    currRoom_X = (w / 2) - 50
+    currRoom_Y = h / 2
+
+    currRoom_Txt = font.render(
+        "Room " + (re.findall("[0-9]+", currNode)[0]),
+        True,
+        fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+    )
+    screen.blit(currRoom_Txt, (currRoom_X, currRoom_Y))  # draw on screen
+
+    RoomL_Txt = font.render(
+        "Room " + (re.findall("[0-9]+", graph[currNode][0])[0]),
+        True,
+        fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+    )
+    screen.blit(RoomL_Txt, (roomL_X, roomL_Y))  # draw on screen
+
+    RoomM_Txt = font.render(
+        "Room " + (re.findall("[0-9]+", graph[currNode][1])[0]),
+        True,
+        fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+    )
+    screen.blit(RoomM_Txt, (roomM_X, roomM_Y))  # draw on screen
+
+    RoomR_Txt = font.render(
+        "Room " + (re.findall("[0-9]+", graph[currNode][2])[0]),
+        True,
+        fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+    )
+    screen.blit(RoomR_Txt, (roomR_X, roomR_Y))  # draw on screen
+
+
+def getRandomNode():
+    num = random.randint(1, 20)
+    node = "n" + str(num)
+    return node
+
+
+def initLocations():
+    player = getRandomNode()
+    wumpus = getRandomNode()
+    return player, wumpus
+
+
 def main():
-    # findHazard(graph)
+    playerLocation, wumpusLocation = initLocations()
+    initLocations()
+    # playerLocation = "n1"
+    # hazardLocation = "n12"
+    # findHazard(graph, playerLocation, wumpusLocation)
+
     graph = {
         "n1": ["n2", "n5", "n8"],
         "n2": ["n10", "n3", "n1"],
@@ -82,8 +136,8 @@ def main():
     pygame.init()
     # arialFont = pygame.font.SysFont("Arial", 30)
 
-    w = 1920
-    h = 1010
+    w = 1000
+    h = 800
 
     bgColour = (255, 255, 255)
     running = True
@@ -95,27 +149,10 @@ def main():
     # font = ("./arial.tff", 32)
     font = pygame.font.Font("freesansbold.ttf", 32)
 
-    def showText(currNode):
-        roomL_X = (w * 0.1) - 100
-        roomL_Y = h / 2
-        roomM_X = (w / 2) - 50
-        roomM_Y = h * 0.1
-        roomR_X = (w * 0.9) - 25
-        roomR_Y = h / 2
+    currNode = "n1"  # set the starting node
+    bgImg = pygame.image.load("./img/bg.jpg")
+    bgImg = pygame.transform.scale(bgImg, (w, h))
 
-        RoomL_Txt = font.render(
-            ("Room " + graph[currNode][0][1]), True, fontColour)
-        screen.blit(RoomL_Txt, (roomL_X, roomL_Y))
-
-        RoomM_Txt = font.render(
-            ("Room " + graph[currNode][1][1]), True, fontColour)
-        screen.blit(RoomM_Txt, (roomM_X, roomM_Y))
-
-        RoomR_Txt = font.render(
-            ("Room " + graph[currNode][2][1]), True, fontColour)
-        screen.blit(RoomR_Txt, (roomR_X, roomR_Y))
-
-    currNode = "n1"
     while running:
         screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
@@ -135,8 +172,8 @@ def main():
                 if event.key == pygame.K_RIGHT:
                     currNode = changeNode(graph, currNode, 2)
 
-        showText(currNode)
-        # pygame.display.update()
+        screen.blit(bgImg, (1, 1))
+        showText(currNode, w, h, fontColour, font, screen, graph)
         pygame.display.update()
 
 
