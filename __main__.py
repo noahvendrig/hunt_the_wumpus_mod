@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-import numpy
+# import numpy
 import random
 from pygame.locals import *
 
@@ -38,7 +38,8 @@ def findHazard(graph):
     distance = 0
 
     if playerLocation != hazardLocation:
-        distance = getChildren(graph, [playerLocation], hazardLocation, currLevel)
+        distance = getChildren(
+            graph, [playerLocation], hazardLocation, currLevel)
     else:
         distance = 0
 
@@ -102,13 +103,16 @@ def main():
         roomR_X = (w * 0.9) - 25
         roomR_Y = h / 2
 
-        RoomL_Txt = font.render(("Room " + graph[currNode][0][1]), True, fontColour)
+        RoomL_Txt = font.render(
+            ("Room " + graph[currNode][0][1]), True, fontColour)
         screen.blit(RoomL_Txt, (roomL_X, roomL_Y))
 
-        RoomM_Txt = font.render(("Room " + graph[currNode][1][1]), True, fontColour)
+        RoomM_Txt = font.render(
+            ("Room " + graph[currNode][1][1]), True, fontColour)
         screen.blit(RoomM_Txt, (roomM_X, roomM_Y))
 
-        RoomR_Txt = font.render(("Room " + graph[currNode][2][1]), True, fontColour)
+        RoomR_Txt = font.render(
+            ("Room " + graph[currNode][2][1]), True, fontColour)
         screen.blit(RoomR_Txt, (roomR_X, roomR_Y))
 
     currNode = "n1"
