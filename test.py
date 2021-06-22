@@ -123,7 +123,10 @@ def main():
         screen.blit(RoomR_Txt, (roomR_X, roomR_Y))
 
     currNode = "n1"
+    img = pygame.image.load('./img.jpg')
+
     while running:
+
         screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # close when x button hit
@@ -142,6 +145,7 @@ def main():
                 if event.key == pygame.K_RIGHT:
                     currNode = changeNode(graph, currNode, 2)
 
+        screen.blit(img, (100, 100))
         showText(currNode)
         pygame.display.update()
 
