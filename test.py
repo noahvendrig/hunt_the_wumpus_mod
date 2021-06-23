@@ -7,14 +7,25 @@ import re
 
 
 class hazard:
-    def __init__(self, type, location):
-        self.type = type
-        self.location = location
+    def __init__(self):
+        self.type = "hazard"
+        self.location = getRandomNode()
+
+
+class wumpus(hazard):
+    def __init__(self):
+        pass
+
+
+class bottomlessPit(hazard):
+    def __init__(self):
+        pass
 
 
 class player:
-    def __init__(self,):
-        pass
+    def __init__(self, type, location):
+        self.type = type
+        self.location = getRandomNode()
 
 
 def getChildren(graph, nodesAtLevel, hazardLocation, currLevel):
@@ -48,8 +59,7 @@ def findHazard(graph, playerLocation, hazardLocation):
     distance = 0
 
     if playerLocation != hazardLocation:
-        distance = getChildren(
-            graph, [playerLocation], hazardLocation, currLevel)
+        distance = getChildren(graph, [playerLocation], hazardLocation, currLevel)
     else:
         distance = 0
 
@@ -198,8 +208,7 @@ def main():
 
         screen.blit(bgImg, (1, 1))
         wumpusDistance = findHazard(graph, currNode, wumpus)
-        showText(currNode, w, h, fontColour, font,
-                 screen, graph, wumpusDistance)
+        showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
         pygame.display.update()
 
 

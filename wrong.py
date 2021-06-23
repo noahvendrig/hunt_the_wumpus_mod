@@ -17,6 +17,7 @@ bottomlessPit = hazard("pit", ("n" + str(random.randint(1, 20))))
 bats = hazard("bats", ("n" + str(random.randint(1, 20))))
 
 
-wumpus.show()
-bottomlessPit.show()
-bats.show()
+# wumpus.show()
+# bottomlessPit.show()
+# bats.show()
+print(wumpus.location)
