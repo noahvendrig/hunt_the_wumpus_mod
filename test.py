@@ -177,7 +177,7 @@ def main():
     bgImg = pygame.transform.scale(bgImg, (w, h))
 
     while running:
-
+        # note only update wumpus location when the player's position is updated - not every iteration in the while loop. call findhazard from changenode and then return wumpusLocation. pass back to main function then pass to showText()
         screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # close when x button hit
