@@ -1,0 +1,3 @@
+-add click on cave to travel (link a click to keyNum 0,1,2)
+-allow hazardPos to be interpreted as a a list then iterate throughout. allows functionality for multiple hazards. e.g. 5 pits or 3 bats or 4 wumpus'
+-ensure that player doesn't spawn on hazards. check if hazard = player then just change player pos until it is fine. while .....
