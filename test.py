@@ -1,4 +1,4 @@
-import pygame
+import pygame  # after activating conda env run the following in cmd: 'pip install pygame'
 from sys import exit
 import numpy
 import random
@@ -9,23 +9,32 @@ import re
 class hazard:
     def __init__(self):
         self.type = "hazard"
-        self.location = getRandomNode()
+        self.location = [getRandomNode()]
+        self.alertDistance = 1
 
 
 class wumpus(hazard):
     def __init__(self):
-        pass
+        hazard.__init__(self)
 
 
 class bottomlessPit(hazard):
     def __init__(self):
-        pass
+        hazard.__init__(self)
+
+
+class bat(hazard):
+    def __init__(self):
+        hazard.__init__(self)
 
 
 class player:
-    def __init__(self, type, location):
-        self.type = type
+    def __init__(self):
+        self.type = "player"
         self.location = getRandomNode()
+
+    def detectHazardCollision(self, wumpusLocation, bottomlessPitLocations, batsLocations):
+        pass
 
 
 def getChildren(graph, nodesAtLevel, hazardLocation, currLevel):
@@ -59,7 +68,8 @@ def findHazard(graph, playerLocation, hazardLocation):
     distance = 0
 
     if playerLocation != hazardLocation:
-        distance = getChildren(graph, [playerLocation], hazardLocation, currLevel)
+        distance = getChildren(
+            graph, [playerLocation], hazardLocation, currLevel)
     else:
         distance = 0
 
@@ -129,18 +139,7 @@ def getRandomNode():
     return node
 
 
-# def initLocations():
-#     player = getRandomNode()
-#     wumpus = getRandomNode()
-#     return player, wumpus
-
-
 def main():
-
-    # playerLocation = "n1"
-    # hazardLocation = "n12"
-    # findHazard(graph, playerLocation, wumpusLocation)
-
     graph = {
         "n1": ["n2", "n5", "n8"],
         "n2": ["n10", "n3", "n1"],
@@ -163,7 +162,6 @@ def main():
         "n19": ["n11", "n18", "n20"],
         "n20": ["n13", "n16", "n19"],
     }
-
     pygame.init()
     # arialFont = pygame.font.SysFont("Arial", 30)
 
@@ -180,13 +178,20 @@ def main():
     # font = ("./arial.tff", 32)
     font = pygame.font.Font("freesansbold.ttf", 32)
 
-    currNode = "n1"  # set the starting node
-    wumpus = "n14"
+    # currNode = "n1"  # set the starting node
+    playerInstance = player()
+    currNode = playerInstance.location
+    wumpusInstance = wumpus()
 
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
 
+    # settings:
+    batsNum = 2
+
     while running:
+        playerInstance.detectHazardCollision(
+            wumpusInstance.location, bottomlessPit.location, bat.location)
         # note only update wumpus location when the player's position is updated - not every iteration in the while loop. call findhazard from changenode and then return wumpusLocation. pass back to main function then pass to showText()
         screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
@@ -207,8 +212,9 @@ def main():
                     currNode = changeNode(graph, currNode, 2)
 
         screen.blit(bgImg, (1, 1))
-        wumpusDistance = findHazard(graph, currNode, wumpus)
-        showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
+        wumpusDistance = findHazard(graph, currNode, wumpusInstance.location)
+        showText(currNode, w, h, fontColour, font,
+                 screen, graph, wumpusDistance)
         pygame.display.update()
 
 
