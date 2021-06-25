@@ -6,10 +6,10 @@ from pygame.locals import *
 import re
 
 
-class hazard:
-    def __init__(self):
+class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
+    def __init__(self):  # function that activates on start
         self.type = "hazard"
-        self.pos = getRandomNode()
+        self.pos = getRandomNode()  # set the position to a random node in the graph
         self.alertDistance = 1
 
 
@@ -71,6 +71,12 @@ def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
         return currLevel
 
 
+def validInputReceived(graph, currNode, keyNum, wumpusPos, pitPos, batPos):
+    currNode = changeNode(graph, currNode, keyNum)
+    wumpusDist = findHazard(graph, currNode, wumpusPos)
+    return currNode, wumpusDist
+
+
 def findHazard(graph, playerPos, hazardPos):
 
     currLevel = 0
@@ -81,7 +87,7 @@ def findHazard(graph, playerPos, hazardPos):
     else:
         distance = 0
 
-    # print("Hazard found %s nodes away from player" % distance)
+    print("Hazard found %s nodes away from player" % distance)
     return distance
 
 
@@ -215,13 +221,14 @@ def main():
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
 
+    wumpusDistance = findHazard(
+        graph, currNode, wumpusInstance.pos
+    )  # calculate initial wumpus distance from spawn
     while running:
-        playerInstance.detectHazardCollision(
-            currNode,
-            wumpusInstance.pos,
-            pitInstance.pos,
-            batInstance.pos,
+        collidedObject = playerInstance.detectHazardCollision(
+            currNode, wumpusInstance.pos, pitInstance.pos, batInstance.pos
         )
+
         # note only update wumpus pos when the player's position is updated - not every iteration in the while loop. call findhazard from changenode and then return wumpusPos. pass back to main function then pass to showText()
         screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
@@ -235,16 +242,37 @@ def main():
                     pygame.quit()
 
                 if event.key == pygame.K_LEFT:
-                    currNode = changeNode(graph, currNode, 0)
+                    currNode, wumpusDistance = validInputReceived(
+                        graph,
+                        currNode,
+                        0,
+                        wumpusInstance.pos,
+                        pitInstance.pos,
+                        batInstance.pos,
+                    )
                 if event.key == pygame.K_UP:
-                    currNode = changeNode(graph, currNode, 1)
+                    currNode, wumpusDistance = validInputReceived(
+                        graph,
+                        currNode,
+                        1,
+                        wumpusInstance.pos,
+                        pitInstance.pos,
+                        batInstance.pos,
+                    )
                 if event.key == pygame.K_RIGHT:
-                    currNode = changeNode(graph, currNode, 2)
+                    currNode, wumpusDistance = validInputReceived(
+                        graph,
+                        currNode,
+                        2,
+                        wumpusInstance.pos,
+                        pitInstance.pos,
+                        batInstance.pos,
+                    )
 
         screen.blit(bgImg, (1, 1))
-        # wumpusDistance = findHazard(graph, currNode, wumpusInstance.pos)
-        wumpusDistance = findHazard(graph, currNode, wumpusInstance.pos)
-        showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
+
+        showText(currNode, w, h, fontColour, font,
+                 screen, graph, wumpusDistance)
         pygame.display.update()
 
 
