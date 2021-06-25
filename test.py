@@ -156,8 +156,9 @@ def getRandomNode():
 
 
 def hazardEffect(colObj):
-    if colObj == "wumpus":
-        pass
+    if "wumpus" in type(colObj):
+        if colObj.type == "wumpus":
+            print("\n\n\n game Over \n\n\n\n")
 
 
 def main():
@@ -233,7 +234,7 @@ def main():
         graph, currNode, wumpusInstance.pos
     )  # calculate initial wumpus distance from spawn
     collidedObject = playerInstance.detectHazardCollision(
-        currNode, wumpusInstance.pos, pitInstance.pos, batInstance.pos)
+        currNode, wumpusInstance, pitInstance.pos, batInstance.pos)
     while running:
 
         screen.fill(bgColour)  # fill before anything else
@@ -279,7 +280,7 @@ def main():
                         batInstance, playerInstance
                     )
                 colObj = playerInstance.detectHazardCollision(
-                    currNode, wumpusInstance.pos, pitInstance.pos, batInstance.pos
+                    currNode, wumpusInstance, pitInstance.pos, batInstance.pos
                 )
 
                 print("collidedobj:", colObj)

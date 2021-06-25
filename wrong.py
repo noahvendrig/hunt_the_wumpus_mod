@@ -13,3 +13,5 @@ for i in range(5):
     classList.append(Cars("R8", 100000, random.randint(0, 10)))
 
 print(classList[1].num)
+
+print(type(classList[0]))
