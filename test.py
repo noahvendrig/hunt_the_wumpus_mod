@@ -8,7 +8,7 @@ import re
 
 class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
     def __init__(self):  # function that activates on start
-        self.type = "hazard"
+        # self.type = "hazard"
         self.pos = getRandomNode()  # set the position to a random node in the graph
         self.alertDistance = 1
 
@@ -16,16 +16,19 @@ class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
 class wumpus(hazard):
     def __init__(self):
         hazard.__init__(self)
+        self.type = "wumpus"
 
 
 class pit(hazard):
     def __init__(self):
         hazard.__init__(self)
+        self.type = "pit"
 
 
 class bat(hazard):
     def __init__(self):
         hazard.__init__(self)
+        self.type = "bat"
 
 
 class player:
@@ -33,15 +36,18 @@ class player:
         self.type = "player"
         self.pos = getRandomNode()
 
-    def detectHazardCollision(self, playerPos, wumpusInstance, pitNodes, batNodes):
+    def detectHazardCollision(self, playerPos, wumpusInstance, pits, bats):
         if playerPos in [wumpusInstance.pos]:
             return wumpusInstance
 
-        if playerPos in pitNodes:
-            return "pit"
+        for pit in pits:
+            if playerPos == pit.pos:
+                return pit
 
-        if playerPos in batNodes:
-            return "bat"
+        for bat in bats:
+            if playerPos == bat.pos:
+                return bat
+
         else:
             return "null"
 
@@ -91,7 +97,7 @@ def findHazard(graph, playerPos, hazardPos):
     else:
         distance = 0
 
-    print("Hazard found %s nodes away from player" % distance)
+    print(f"Hazard found {distance} nodes away from player at {playerPos}")
     return distance
 
 
@@ -157,10 +163,19 @@ def getRandomNode():
     return node
 
 
-def hazardEffect(colObj):
-    if "wumpus" in type(colObj):
-        if colObj.type == "wumpus":
-            print("\n\n\n game Over \n\n\n\n")
+def hazardEffect(colObj, playerPos):
+    newPlayerPos = ""
+    if colObj.type == "wumpus":
+        print(f"just hit the fucking WUMPUS at {colObj.pos}")
+        return
+    elif colObj.type == "pit":
+        print(f"just hit a fucking PIT at {colObj.pos}")
+        return
+    elif colObj.type == "bat":
+
+        print(f"just hit a fucking BAT at {colObj.pos}")
+        newPlayerPos = getRandomNode()
+        return newPlayerPos
 
 
 def main():
@@ -211,17 +226,17 @@ def main():
     wumpusInstance = wumpus()
 
     currNode = playerInstance.pos
-
+    print(f"initial: {currNode = }")
     bats = []
     pits = []
-    batNodes = []
-    pitNodes = []
+
     wumpusNodes = []
 
     # for w in range(wumpusNum):
     #     wumpusInstance = wumpus()
     #     wumpusNodes.append(wumpusInstance.pos)
-
+    batNodes = []  #################################### delete later
+    pitNodes = []  #################################### delete later
     for b in range(batsNum):
         batInstance = bat()
         if batInstance.pos == playerInstance.pos:
@@ -237,8 +252,10 @@ def main():
         pitNodes.append(pitInstance.pos)
 
     print(f"{wumpusInstance.pos = }")
-    print(f"{batNodes = }")
-    print(f"{pitNodes = }")
+
+    print(f"{pitNodes = }")  #################################### delete later
+    print(f"{batNodes = }")  #################################### delete later
+
     ################################################
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
@@ -246,11 +263,9 @@ def main():
     wumpusDistance = findHazard(
         graph, currNode, wumpusInstance.pos
     )  # calculate initial wumpus distance from spawn
-    collidedObject = playerInstance.detectHazardCollision(
-        currNode, wumpusInstance, pitNodes, batNodes
-    )
-    if collidedObject != "null":
-        raise Exception(f"collided object = {collidedObject}")
+    colObj = playerInstance.detectHazardCollision(currNode, wumpusInstance, pits, bats)
+    if colObj != "null":
+        raise Exception(f"collided object = {colObj}")
 
     while running:
 
@@ -271,8 +286,8 @@ def main():
                         currNode,
                         0,
                         wumpusInstance,
-                        pitInstance,
-                        batInstance,
+                        pits,
+                        bats,
                         playerInstance,
                     )
                     # collidedObject = playerInstance.detectHazardCollision(
@@ -284,8 +299,8 @@ def main():
                         currNode,
                         1,
                         wumpusInstance,
-                        pitInstance,
-                        batInstance,
+                        pits,
+                        bats,
                         playerInstance,
                     )
 
@@ -295,18 +310,20 @@ def main():
                         currNode,
                         2,
                         wumpusInstance,
-                        pitInstance,
-                        batInstance,
+                        pits,
+                        bats,
                         playerInstance,
                     )
 
                 colObj = playerInstance.detectHazardCollision(
-                    currNode, wumpusInstance, pitNodes, batNodes
+                    currNode, wumpusInstance, pits, bats
                 )
-
                 if colObj != "null":
-                    print("collidedobj:", colObj)
-                    # effect = hazardEffect(collidedObject)
+                    print(f"{colObj = }")
+
+                    # print("collidedobj:", colObj)
+                    currNode = hazardEffect(colObj, playerInstance.pos)
+                    # print(f"MODIFIED CURRNODE = {currNode}")
 
         screen.blit(bgImg, (1, 1))
 
