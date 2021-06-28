@@ -163,19 +163,29 @@ def getRandomNode():
     return node
 
 
-def hazardEffect(colObj, playerPos):
+def wumpusDeath():
+    pass
+
+
+def pitDeath():
+    pass
+
+
+def hazardEffect(colObj):
     newPlayerPos = ""
     if colObj.type == "wumpus":
-        print(f"just hit the fucking WUMPUS at {colObj.pos}")
-        return
-    elif colObj.type == "pit":
-        print(f"just hit a fucking PIT at {colObj.pos}")
-        return
-    elif colObj.type == "bat":
+        print(f"just hit the WUMPUS at {colObj.pos}")
+        # wumpusDeath()
 
-        print(f"just hit a fucking BAT at {colObj.pos}")
+    elif colObj.type == "pit":
+        print(f"just hit a PIT at {colObj.pos}")
+        # pitDeath()
+
+    elif colObj.type == "bat":
+        print(f"just hit a BAT at {colObj.pos}")
         newPlayerPos = getRandomNode()
         return newPlayerPos
+    return
 
 
 def main():
@@ -260,6 +270,9 @@ def main():
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
 
+    batImg = pygame.image.load("./img/bats.png")
+    batImg = pygame.transform.scale(batImg, (500, 500))
+
     wumpusDistance = findHazard(
         graph, currNode, wumpusInstance.pos
     )  # calculate initial wumpus distance from spawn
@@ -268,8 +281,8 @@ def main():
         raise Exception(f"collided object = {colObj}")
 
     while running:
-
-        screen.fill(bgColour)  # fill before anything else
+        screen.blit(bgImg, (1, 1))
+        # screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # close when x button hit
                 running = False
@@ -290,9 +303,7 @@ def main():
                         bats,
                         playerInstance,
                     )
-                    # collidedObject = playerInstance.detectHazardCollision(
-                    #     currNode, wumpusInstance.pos, pitInstance.pos, batInstance.pos
-                    # )
+
                 if event.key == pygame.K_UP:
                     currNode, wumpusDistance = validInputReceived(
                         graph,
@@ -322,11 +333,15 @@ def main():
                     print(f"{colObj = }")
 
                     # print("collidedobj:", colObj)
-                    currNode = hazardEffect(colObj, playerInstance.pos)
+                    effect = hazardEffect(colObj)
                     # print(f"MODIFIED CURRNODE = {currNode}")
-
-        screen.blit(bgImg, (1, 1))
-
+                    if effect is not None:
+                        print("show bats!")
+                        for n in range(100):
+                            screen.blit(batImg, (400, 100))
+                            pygame.display.update()
+                        currNode = effect
+        # screen.blit(batImg, (1, 1))
         showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
         pygame.display.update()
 
