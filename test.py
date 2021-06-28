@@ -71,7 +71,9 @@ def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
         return currLevel
 
 
-def validInputReceived(graph, currNode, keyNum, wumpusInstance, pitInstance, batInstance, playerInstance):
+def validInputReceived(
+    graph, currNode, keyNum, wumpusInstance, pits, bats, playerInstance
+):
     wumpusPos = wumpusInstance.pos
 
     currNode = changeNode(graph, currNode, keyNum)
@@ -187,8 +189,8 @@ def main():
     pygame.init()
     # arialFont = pygame.font.SysFont("Arial", 30)
 
-    w = 1000
-    h = 800
+    w = 1600
+    h = 900
 
     bgColour = (255, 255, 255)
     running = True
@@ -207,9 +209,11 @@ def main():
     wumpusNum = 1
     playerInstance = player()
     wumpusInstance = wumpus()
-    print("wumups pos", wumpusInstance.pos)
+
     currNode = playerInstance.pos
 
+    bats = []
+    pits = []
     batNodes = []
     pitNodes = []
     wumpusNodes = []
@@ -220,12 +224,21 @@ def main():
 
     for b in range(batsNum):
         batInstance = bat()
+        if batInstance.pos == playerInstance.pos:
+            batInstance.pos = getRandomNode()
+        bats.append(batInstance)
         batNodes.append(batInstance.pos)
 
     for p in range(pitNum):
         pitInstance = pit()
+        if pitInstance.pos == playerInstance.pos:
+            pitInstance.pos = getRandomNode()
+        pits.append(pitInstance)
         pitNodes.append(pitInstance.pos)
 
+    print(f"{wumpusInstance.pos = }")
+    print(f"{batNodes = }")
+    print(f"{pitNodes = }")
     ################################################
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
@@ -234,7 +247,11 @@ def main():
         graph, currNode, wumpusInstance.pos
     )  # calculate initial wumpus distance from spawn
     collidedObject = playerInstance.detectHazardCollision(
-        currNode, wumpusInstance, pitInstance.pos, batInstance.pos)
+        currNode, wumpusInstance, pitNodes, batNodes
+    )
+    if collidedObject != "null":
+        raise Exception(f"collided object = {collidedObject}")
+
     while running:
 
         screen.fill(bgColour)  # fill before anything else
@@ -255,7 +272,8 @@ def main():
                         0,
                         wumpusInstance,
                         pitInstance,
-                        batInstance, playerInstance
+                        batInstance,
+                        playerInstance,
                     )
                     # collidedObject = playerInstance.detectHazardCollision(
                     #     currNode, wumpusInstance.pos, pitInstance.pos, batInstance.pos
@@ -267,7 +285,8 @@ def main():
                         1,
                         wumpusInstance,
                         pitInstance,
-                        batInstance, playerInstance
+                        batInstance,
+                        playerInstance,
                     )
 
                 if event.key == pygame.K_RIGHT:
@@ -277,20 +296,21 @@ def main():
                         2,
                         wumpusInstance,
                         pitInstance,
-                        batInstance, playerInstance
+                        batInstance,
+                        playerInstance,
                     )
+
                 colObj = playerInstance.detectHazardCollision(
-                    currNode, wumpusInstance, pitInstance.pos, batInstance.pos
+                    currNode, wumpusInstance, pitNodes, batNodes
                 )
 
-                print("collidedobj:", colObj)
                 if colObj != "null":
-                    effect = hazardEffect(collidedObject)
+                    print("collidedobj:", colObj)
+                    # effect = hazardEffect(collidedObject)
 
         screen.blit(bgImg, (1, 1))
 
-        showText(currNode, w, h, fontColour, font,
-                 screen, graph, wumpusDistance)
+        showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
         pygame.display.update()
 
 
