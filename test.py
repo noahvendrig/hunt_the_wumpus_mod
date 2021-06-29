@@ -1,9 +1,13 @@
 import pygame  # after activating conda env run the following in cmd: 'pip install pygame'
-from sys import exit
+from sys import exit, float_repr_style
 import numpy
 import random
 from pygame.locals import *
 import re
+import time
+
+s = time.time()
+print(s)
 
 
 class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
@@ -188,7 +192,13 @@ def hazardEffect(colObj):
     return
 
 
+def showBat(screen, batImg):
+    screen.blit(batImg, (400, 100))
+    pygame.display.update()
+
+
 def main():
+
     graph = {
         "n1": ["n2", "n5", "n8"],
         "n2": ["n10", "n3", "n1"],
@@ -213,6 +223,7 @@ def main():
     }
     pygame.init()
     # arialFont = pygame.font.SysFont("Arial", 30)
+    frameCount = 0
 
     w = 1600
     h = 900
@@ -229,14 +240,16 @@ def main():
 
     # currNode = "n1"  # set the starting node
     # settings: ##########################################################
+    fps = 25
     batsNum = 2
     pitNum = 2
     wumpusNum = 1
     playerInstance = player()
     wumpusInstance = wumpus()
 
-    currNode = playerInstance.pos
-    print(f"initial: {currNode = }")
+    # currNode = playerInstance.pos
+    currNode = "n1"
+    print(f"initial {currNode = }")
     bats = []
     pits = []
 
@@ -249,8 +262,8 @@ def main():
     pitNodes = []  #################################### delete later
     for b in range(batsNum):
         batInstance = bat()
-        if batInstance.pos == playerInstance.pos:
-            batInstance.pos = getRandomNode()
+        if batInstance.pos == playerInstance.pos or batInstance.pos != "n2":
+            batInstance.pos = "n2"  # getRandomNode()
         bats.append(batInstance)
         batNodes.append(batInstance.pos)
 
@@ -272,6 +285,8 @@ def main():
 
     batImg = pygame.image.load("./img/bats.png")
     batImg = pygame.transform.scale(batImg, (500, 500))
+
+    clock = pygame.time.Clock()
 
     wumpusDistance = findHazard(
         graph, currNode, wumpusInstance.pos
@@ -329,21 +344,33 @@ def main():
                 colObj = playerInstance.detectHazardCollision(
                     currNode, wumpusInstance, pits, bats
                 )
-                if colObj != "null":
-                    print(f"{colObj = }")
 
-                    # print("collidedobj:", colObj)
+                if colObj != "null":
                     effect = hazardEffect(colObj)
-                    # print(f"MODIFIED CURRNODE = {currNode}")
                     if effect is not None:
-                        print("show bats!")
-                        for n in range(100):
-                            screen.blit(batImg, (400, 100))
-                            pygame.display.update()
                         currNode = effect
+
+                        print("show bats!")
+                        startFrames = frameCount
+                        duration = 5 * fps
+                        currFrames = 0
+
+                        while startFrames + duration > currFrames:
+
+                            # print(f"{startFrames, duration, currFrames}")
+
+                            currFrames += 25
+                            # clock.tick(0.1)
+                            # time.sleep(4)
+
+                        while True:
+                            showBat(screen, batImg)
         # screen.blit(batImg, (1, 1))
         showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
         pygame.display.update()
+        frameCount += fps
+        print(frameCount, end=" ")
+        clock.tick(fps)
 
 
 main()
