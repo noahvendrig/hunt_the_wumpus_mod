@@ -5,9 +5,7 @@ import random
 from pygame.locals import *
 import re
 import time
-
-s = time.time()
-print(s)
+import voice
 
 
 class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
@@ -130,7 +128,6 @@ def showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance):
         fontColour,  # finds integers in the string e.g. "19" in "n19" to display
     )
     screen.blit(distanceTxt, (500, 700))  # draw on screen
-    ##
 
     currRoom_Txt = font.render(
         "Room " + (re.findall("[0-9]+", currNode)[0]),
@@ -224,9 +221,9 @@ def main():
     pygame.init()
     # arialFont = pygame.font.SysFont("Arial", 30)
     frameCount = 0
-
-    w = 1600
-    h = 900
+    i = False
+    w = 1200
+    h = 600
 
     bgColour = (255, 255, 255)
     running = True
@@ -243,37 +240,47 @@ def main():
     fps = 25
     batsNum = 2
     pitNum = 2
-    wumpusNum = 1
-    playerInstance = player()
-    wumpusInstance = wumpus()
 
-    # currNode = playerInstance.pos
-    currNode = "n1"
-    print(f"initial {currNode = }")
+    filledNodes = []
+    playerInstance = player()
+    print(f"{playerInstance.pos = }")
+    filledNodes.append(playerInstance.pos)
+
+    wumpusInstance = wumpus()
+    while wumpusInstance.pos in filledNodes:
+        wumpusInstance.pos == getRandomNode()
+    filledNodes.append(wumpusInstance.pos)
+
+    currNode = playerInstance.pos
+    # print(f"initial {currNode = }")
     bats = []
     pits = []
-
-    wumpusNodes = []
+    # wumpusNum = 1
+    # wumpusNodes = []
 
     # for w in range(wumpusNum):
     #     wumpusInstance = wumpus()
     #     wumpusNodes.append(wumpusInstance.pos)
     batNodes = []  #################################### delete later
     pitNodes = []  #################################### delete later
+
     for b in range(batsNum):
         batInstance = bat()
-        if batInstance.pos == playerInstance.pos or batInstance.pos != "n2":
-            batInstance.pos = "n2"  # getRandomNode()
+        while batInstance.pos in filledNodes:
+            batInstance.pos = getRandomNode()
         bats.append(batInstance)
+        filledNodes.append(batInstance.pos)
         batNodes.append(batInstance.pos)
 
     for p in range(pitNum):
         pitInstance = pit()
-        if pitInstance.pos == playerInstance.pos:
+        while pitInstance.pos in filledNodes:
             pitInstance.pos = getRandomNode()
         pits.append(pitInstance)
+        filledNodes.append(pitInstance.pos)
         pitNodes.append(pitInstance.pos)
 
+    print(f"{filledNodes = }")
     print(f"{wumpusInstance.pos = }")
 
     print(f"{pitNodes = }")  #################################### delete later
@@ -295,7 +302,10 @@ def main():
     if colObj != "null":
         raise Exception(f"collided object = {colObj}")
 
+    batTime = None
+
     while running:
+
         screen.blit(bgImg, (1, 1))
         # screen.fill(bgColour)  # fill before anything else
         for event in pygame.event.get():
@@ -309,6 +319,7 @@ def main():
                     pygame.quit()
 
                 if event.key == pygame.K_LEFT:
+                    print("eeee")
                     currNode, wumpusDistance = validInputReceived(
                         graph,
                         currNode,
@@ -349,27 +360,21 @@ def main():
                     effect = hazardEffect(colObj)
                     if effect is not None:
                         currNode = effect
+                        batTime = time.time()
 
-                        print("show bats!")
-                        startFrames = frameCount
-                        duration = 5 * fps
-                        currFrames = 0
 
-                        while startFrames + duration > currFrames:
+        if batTime is not None:
+            screen.blit(batImg, (400, 100))
+            currTime = time.time()
 
-                            # print(f"{startFrames, duration, currFrames}")
+            if currTime - batTime > 5:
+                batTime = None
 
-                            currFrames += 25
-                            # clock.tick(0.1)
-                            # time.sleep(4)
-
-                        while True:
-                            showBat(screen, batImg)
-        # screen.blit(batImg, (1, 1))
         showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
+
         pygame.display.update()
         frameCount += fps
-        print(frameCount, end=" ")
+        # print(frameCount, end=" ")
         clock.tick(fps)
 
 
