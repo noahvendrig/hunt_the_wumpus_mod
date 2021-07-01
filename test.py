@@ -300,77 +300,79 @@ def main():
     )  # calculate initial wumpus distance from spawn
     colObj = playerInstance.detectHazardCollision(currNode, wumpusInstance, pits, bats)
     if colObj != "null":
-        raise Exception(f"collided object = {colObj}")
+        raise Exception(f"{colObj = }")
 
     batTime = None
+    mainMenuActive = True
+    gameActive = False
 
     while running:
-
-        screen.blit(bgImg, (1, 1))
-        # screen.fill(bgColour)  # fill before anything else
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # close when x button hit
-                running = False
-                pygame.quit()
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+        if mainMenuActive:
+            screen.blit(bgImg, (1, 1))
+        elif gameActive:
+            screen.blit(bgImg, (1, 1))
+            # screen.fill(bgColour)  # fill before anything else
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # close when x button hit
                     running = False
                     pygame.quit()
 
-                if event.key == pygame.K_LEFT:
-                    print("eeee")
-                    currNode, wumpusDistance = validInputReceived(
-                        graph,
-                        currNode,
-                        0,
-                        wumpusInstance,
-                        pits,
-                        bats,
-                        playerInstance,
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                        pygame.quit()
+
+                    if event.key == pygame.K_LEFT:
+                        currNode, wumpusDistance = validInputReceived(
+                            graph,
+                            currNode,
+                            0,
+                            wumpusInstance,
+                            pits,
+                            bats,
+                            playerInstance,
+                        )
+
+                    if event.key == pygame.K_UP:
+                        currNode, wumpusDistance = validInputReceived(
+                            graph,
+                            currNode,
+                            1,
+                            wumpusInstance,
+                            pits,
+                            bats,
+                            playerInstance,
+                        )
+
+                    if event.key == pygame.K_RIGHT:
+                        currNode, wumpusDistance = validInputReceived(
+                            graph,
+                            currNode,
+                            2,
+                            wumpusInstance,
+                            pits,
+                            bats,
+                            playerInstance,
+                        )
+
+                    colObj = playerInstance.detectHazardCollision(
+                        currNode, wumpusInstance, pits, bats
                     )
 
-                if event.key == pygame.K_UP:
-                    currNode, wumpusDistance = validInputReceived(
-                        graph,
-                        currNode,
-                        1,
-                        wumpusInstance,
-                        pits,
-                        bats,
-                        playerInstance,
-                    )
+                    if colObj != "null":
+                        effect = hazardEffect(colObj)
+                        if effect is not None:
+                            currNode = effect
+                            batTime = time.time()
 
-                if event.key == pygame.K_RIGHT:
-                    currNode, wumpusDistance = validInputReceived(
-                        graph,
-                        currNode,
-                        2,
-                        wumpusInstance,
-                        pits,
-                        bats,
-                        playerInstance,
-                    )
+            if batTime is not None:
+                screen.blit(batImg, (400, 100))
+                currTime = time.time()
 
-                colObj = playerInstance.detectHazardCollision(
-                    currNode, wumpusInstance, pits, bats
-                )
+                if currTime - batTime > 5:
+                    batTime = None
 
-                if colObj != "null":
-                    effect = hazardEffect(colObj)
-                    if effect is not None:
-                        currNode = effect
-                        batTime = time.time()
-
-
-        if batTime is not None:
-            screen.blit(batImg, (400, 100))
-            currTime = time.time()
-
-            if currTime - batTime > 5:
-                batTime = None
-
-        showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
+            showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
 
         pygame.display.update()
         frameCount += fps
