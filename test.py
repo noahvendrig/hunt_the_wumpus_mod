@@ -79,14 +79,16 @@ def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
         return currLevel
 
 
-def validInputReceived(
-    graph, currNode, keyNum, wumpusInstance, pits, bats, playerInstance
-):
-    wumpusPos = wumpusInstance.pos
+def validInputReceived(graph, currNode, keyNum, wumpusInstance, pits, bats, playerInstance):
 
     currNode = changeNode(graph, currNode, keyNum)
-    wumpusDist = findHazard(graph, currNode, wumpusPos)
-    return currNode, wumpusDist
+    wumpusDist = min(findHazard(graph, currNode, wump.pos) for wump in [wumpusInstance]) # change to wumpus list
+    # wumpusDist = findHazard(graph, currNode, wumpusInstance.pos)
+    pitDist = min([findHazard(graph, currNode, pit.pos) for pit in pits])
+    batDist = min([findHazard(graph, currNode, bat.pos) for bat in bats])
+    # print(f"{pitDist = }")
+    # print(f"{batDist = }")
+    return currNode, wumpusDist, pitDist, batDist
 
 
 def findHazard(graph, playerPos, hazardPos):
@@ -109,7 +111,7 @@ def changeNode(graph, currNode, direction):  # direction: 0 = left, 1 = middle, 
     return nextNode
 
 
-def showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance):
+def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance):
     roomL_X = (w * 0.1) - 100
     roomL_Y = h / 2
     roomM_X = (w / 2) - 50
@@ -121,13 +123,39 @@ def showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance):
     currRoom_Y = h / 2
 
     # DISTANCE
-
-    distanceTxt = font.render(
-        "Wumpus is %s nodes away" % wumpusDistance,
-        True,
-        fontColour,  # finds integers in the string e.g. "19" in "n19" to display
-    )
-    screen.blit(distanceTxt, (500, 700))  # draw on screen
+    
+    for key in hazardDistance:
+        if hazardDistance[key] == 1:
+            print(f"{key} = {hazardDistance[key]}")
+            if key == "wumpusDistance":
+                
+                distanceTxt = font.render(
+                        "THE WUMPUS IS NEARBY",
+                        True,
+                        fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+                    )
+                # distanceTxt = font.render(
+                #     f"{key} is %s nodes away" % hazardDistance[key],
+                #     True,
+                #     fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+                # )
+                screen.blit(distanceTxt, (300, 400))  # draw on screen
+            if key == "pitDistance":
+            # print(f"{key} = {hazardDistance[key]}")
+                distanceTxt = font.render(
+                    "THERE IS A PIT NEARBY",
+                    True,
+                    fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+                )
+                screen.blit(distanceTxt, (300, 500))  # draw on screen
+            if key == "batDistance":
+            # print(f"{key} = {hazardDistance[key]}")
+                distanceTxt = font.render(
+                    "THERE ARE BATS NEARBY",
+                    True,
+                    fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+                )
+                screen.blit(distanceTxt, (200, 350))  # draw on screen
 
     currRoom_Txt = font.render(
         "Room " + (re.findall("[0-9]+", currNode)[0]),
@@ -295,16 +323,17 @@ def main():
 
     clock = pygame.time.Clock()
 
-    wumpusDistance = findHazard(
-        graph, currNode, wumpusInstance.pos
-    )  # calculate initial wumpus distance from spawn
+    wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [wumpusInstance])  # calculate initial wumpus distance from spawn
+    pitDistance = min([findHazard(graph, currNode, pit.pos) for pit in pits])
+    batDistance = min([findHazard(graph, currNode, bat.pos) for bat in bats])
+
     colObj = playerInstance.detectHazardCollision(currNode, wumpusInstance, pits, bats)
     if colObj != "null":
         raise Exception(f"{colObj = }")
 
     batTime = None
-    mainMenuActive = True
-    gameActive = False
+    mainMenuActive = False
+    gameActive = True
 
     while running:
         if mainMenuActive:
@@ -323,7 +352,7 @@ def main():
                         pygame.quit()
 
                     if event.key == pygame.K_LEFT:
-                        currNode, wumpusDistance = validInputReceived(
+                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
                             graph,
                             currNode,
                             0,
@@ -334,7 +363,7 @@ def main():
                         )
 
                     if event.key == pygame.K_UP:
-                        currNode, wumpusDistance = validInputReceived(
+                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
                             graph,
                             currNode,
                             1,
@@ -345,7 +374,7 @@ def main():
                         )
 
                     if event.key == pygame.K_RIGHT:
-                        currNode, wumpusDistance = validInputReceived(
+                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
                             graph,
                             currNode,
                             2,
@@ -371,8 +400,14 @@ def main():
 
                 if currTime - batTime > 5:
                     batTime = None
-
-            showText(currNode, w, h, fontColour, font, screen, graph, wumpusDistance)
+            hazardDistance = {'wumpusDistance': wumpusDistance, 'pitDistance': pitDistance, 'batDistance': batDistance}
+            # if wumpusDistance == 1:
+            #     hazardWarning.update({'wumpusDistance': wumpusDistance})
+            # elif pitDistance == 1:
+            #     hazardWarning.update({'pitDistance': pitDistance})
+            # elif batDistance == 1:
+            #     hazardWarning.update({'batDistance': batDistance})
+            showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance)
 
         pygame.display.update()
         frameCount += fps
