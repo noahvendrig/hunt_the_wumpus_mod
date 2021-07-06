@@ -77,6 +77,18 @@ def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
     else:
         return currLevel
 
+def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
+    if isinstance(content, (pygame.surface)):
+        print(f"{content}text NOT surface, {type(content) = }")
+        text = font.render(content, True, fontColour)
+    else:
+        print("text is a surface")
+        
+        text = content
+    if time.time() - startTime < duration: # while it hasnt been duration in seconds
+        screen.blit(text, (x, y))  # draw on screen
+        pygame.display.update()
+    
 
 def validInputReceived(graph, currNode, keyNum, wumpusInstance, pits, bats, playerInstance):
 
@@ -100,7 +112,7 @@ def findHazard(graph, playerPos, hazardPos):
     else:
         distance = 0
 
-    print(f"Hazard found {distance} nodes away from player at {playerPos}")
+    # print(f"Hazard found {distance} nodes away from player at {playerPos}")
     return distance
 
 
@@ -125,7 +137,7 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance):
     
     for key in hazardDistance:
         if hazardDistance[key] == 1:
-            print(f"{key} = {hazardDistance[key]}")
+            # print(f"{key} = {hazardDistance[key]}")
             if key == "wumpusDistance":
                 
                 distanceTxt = font.render(
@@ -191,29 +203,16 @@ def getRandomNode():
     return node
 
 
-def wumpusDeath():
+def wumpusDeath(fontColour, font, screen):
+    deathTxt = font.render("YOU GOT KILLED BY THE WUMPUS",True,fontColour)
+    screen.blit(deathTxt, (200, 350))  # draw on screen
     pass
 
 
-def pitDeath():
-    pass
-
-
-def hazardEffect(colObj):
-    newPlayerPos = ""
-    if colObj.type == "wumpus":
-        print(f"just hit the WUMPUS at {colObj.pos}")
-        # wumpusDeath()
-
-    elif colObj.type == "pit":
-        print(f"just hit a PIT at {colObj.pos}")
-        # pitDeath()
-
-    elif colObj.type == "bat":
-        print(f"just hit a BAT at {colObj.pos}")
-        newPlayerPos = getRandomNode()
-        return newPlayerPos
-    return
+def pitDeath(fontColour, font, screen):
+    # deathTxt = font.render("YOU FELL INTO A PIT",True,fontColour)
+    # screen.blit(deathTxt, (200, 350))  # draw on screen
+    showTimedText(300, 400, 5, "YOU FELL INTO A PIT LO IT WORKS", fontColour, font, screen)
 
 
 def showBat(screen, batImg):
@@ -254,14 +253,14 @@ def main():
     # pitSound = pygame.mixer.music("./audio/pit.mp3")
     pitSound = pygame.mixer.Sound("./audio/w.wav")
     pygame.mixer.set_num_channels(5)
-    pitSound.play()
-    wumpusSound.play()
+    # pitSound.play()
+    # wumpusSound.play()
 
     # arialFont = pygame.font.SysFont("Arial", 30)
     frameCount = 0
     i = False
-    w = 1200
-    h = 600
+    w = 1800
+    h = 900
 
     bgColour = (255, 255, 255)
     running = True
@@ -331,6 +330,8 @@ def main():
     batImg = pygame.image.load("./img/bats.png")
     batImg = pygame.transform.scale(batImg, (500, 500))
 
+    # print(f"{type(batImg) = }")
+
     clock = pygame.time.Clock()
 
     wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [wumpusInstance])  # calculate initial wumpus distance from spawn
@@ -341,9 +342,12 @@ def main():
     if colObj != "null":
         raise Exception(f"{colObj = }")
 
-    batTime = None
+    batTextTime = None
     mainMenuActive = False
     gameActive = True
+
+    showPitDeathText = False
+    showBatMoveText = False
 
     while running:
         if mainMenuActive:
@@ -399,17 +403,35 @@ def main():
                     )
 
                     if colObj != "null":
-                        effect = hazardEffect(colObj)
-                        if effect is not None:
-                            currNode = effect
-                            batTime = time.time()
+                        startTime = time.time()
+                        if colObj.type == "wumpus":
+                            print(f"just hit the WUMPUS at {colObj.pos}")
+                            wumpusDeath(fontColour, font, screen)
 
-            if batTime is not None:
-                screen.blit(batImg, (400, 100))
-                currTime = time.time()
+                        elif colObj.type == "pit":
+                            print(f"just hit a PIT at {colObj.pos}")
+                            # pitDeath(fontColour, font, screen)
+                            showPitDeathText = True
+                            # startTime = time.time()
 
-                if currTime - batTime > 5:
-                    batTime = None
+                        elif colObj.type == "bat":
+                            print(f"just hit a BAT at {colObj.pos}")
+                            currNode = getRandomNode()
+                            batTextTime = time.time()
+                            showBatMoveText = True
+
+            if showPitDeathText:
+                showTimedText(400, 300, 10, "just hit a PIT oof", fontColour, font, screen, startTime)
+
+            if showBatMoveText:
+                showTimedText(400, 100, 3, batImg, fontColour, font, screen, startTime)
+
+            # if batTextTime is not None:
+            #     screen.blit(batImg, (400, 100))
+            #     currTime = time.time()
+
+            #     if currTime - batTextTime > 5:
+            #         batTextTime = None
             hazardDistance = {'wumpusDistance': wumpusDistance, 'pitDistance': pitDistance, 'batDistance': batDistance}
             # if wumpusDistance == 1:
             #     hazardWarning.update({'wumpusDistance': wumpusDistance})
@@ -421,8 +443,7 @@ def main():
 
         pygame.display.update()
         frameCount += fps
-        # print(frameCount, end=" ")
         clock.tick(fps)
 
-
-main()
+if __name__ == "__main__":
+    main()
