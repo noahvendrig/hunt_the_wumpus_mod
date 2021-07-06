@@ -1,11 +1,10 @@
-import pygame  # after activating conda env run the following in cmd: 'pip install pygame'
+import pygame  # pygame 2.0.1 (SDL 2.0.14, Python 3.8.10) # after activating conda env run the following in cmd: 'pip install pygame'
 from sys import exit, float_repr_style
 import numpy
 import random
 from pygame.locals import *
 import re
 import time
-import voice
 
 
 class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
@@ -246,7 +245,18 @@ def main():
         "n19": ["n11", "n18", "n20"],
         "n20": ["n13", "n16", "n19"],
     }
+
     pygame.init()
+    pygame.mixer.init()
+
+    batSound = pygame.mixer.Sound("./audio/bat.mp3")
+    wumpusSound = pygame.mixer.Sound("./audio/wumpus.mp3")
+    # pitSound = pygame.mixer.music("./audio/pit.mp3")
+    pitSound = pygame.mixer.Sound("./audio/w.wav")
+    pygame.mixer.set_num_channels(5)
+    pitSound.play()
+    wumpusSound.play()
+
     # arialFont = pygame.font.SysFont("Arial", 30)
     frameCount = 0
     i = False
