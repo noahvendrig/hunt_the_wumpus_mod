@@ -78,13 +78,18 @@ def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
         return currLevel
 
 def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
-    if isinstance(content, (pygame.surface)):
-        print(f"{content}text NOT surface, {type(content) = }")
+    # text = None
+    # if isinstance(content, (float, int, str, list, dict, tuple)):
+
+    #     text = font.render(content, True, fontColour)
+    # else:
+    #     text= content
+
+    try:
         text = font.render(content, True, fontColour)
-    else:
-        print("text is a surface")
-        
-        text = content
+    except:
+        text= content
+
     if time.time() - startTime < duration: # while it hasnt been duration in seconds
         screen.blit(text, (x, y))  # draw on screen
         pygame.display.update()
@@ -342,7 +347,6 @@ def main():
     if colObj != "null":
         raise Exception(f"{colObj = }")
 
-    batTextTime = None
     mainMenuActive = False
     gameActive = True
 
@@ -350,6 +354,7 @@ def main():
     showBatMoveText = False
 
     while running:
+        
         if mainMenuActive:
             screen.blit(bgImg, (1, 1))
         elif gameActive:
@@ -417,21 +422,18 @@ def main():
                         elif colObj.type == "bat":
                             print(f"just hit a BAT at {colObj.pos}")
                             currNode = getRandomNode()
-                            batTextTime = time.time()
+                            # batTextTime = time.time()
                             showBatMoveText = True
 
             if showPitDeathText:
                 showTimedText(400, 300, 10, "just hit a PIT oof", fontColour, font, screen, startTime)
-
-            if showBatMoveText:
-                showTimedText(400, 100, 3, batImg, fontColour, font, screen, startTime)
-
-            # if batTextTime is not None:
-            #     screen.blit(batImg, (400, 100))
-            #     currTime = time.time()
-
-            #     if currTime - batTextTime > 5:
-            #         batTextTime = None
+            
+            elif showBatMoveText:
+                showTimedText(400, 100, 1, batImg, fontColour, font, screen, startTime)
+            else:
+                showPitDeathText = False
+                showBatMoveText = False
+                
             hazardDistance = {'wumpusDistance': wumpusDistance, 'pitDistance': pitDistance, 'batDistance': batDistance}
             # if wumpusDistance == 1:
             #     hazardWarning.update({'wumpusDistance': wumpusDistance})
