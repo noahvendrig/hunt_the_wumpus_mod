@@ -1,3 +1,15 @@
+
+__author__ = 'Noah Vendrig'
+__license__ = 'MIT' # copy of the license available @ https://prodicus.mit-license.org/
+__version__ = '1.0.1'
+__email__ = 'noah.vendrig@education.nsw.gov.au'
+__github__ = "github.com/noahvendrig" # @noahvendrig
+__course__ = 'Software Design and Development'
+__date__ = '10/07/2021'
+__description__ = 'Modern Recreation of text-based adventure game Hunt the Wumpus (1973)'
+__specifications__ = "noahvendrig.com/#about" #specifications available here
+
+# ====================================== Imports ======================================
 import pygame  # pygame 2.0.1 (SDL 2.0.14, Python 3.8.10) # after activating conda env run the following in cmd: 'pip install pygame'
 from sys import exit, float_repr_style
 import numpy
@@ -5,7 +17,7 @@ import random
 from pygame.locals import *
 import re
 import time
-
+# =====================================================================================
 
 class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
     def __init__(self):  # function that activates on start
@@ -224,6 +236,8 @@ def showBat(screen, batImg):
     screen.blit(batImg, (400, 100))
     pygame.display.update()
 
+def registerSelection(currentSelection):
+    pass
 
 def main():
 
@@ -263,7 +277,7 @@ def main():
 
     # arialFont = pygame.font.SysFont("Arial", 30)
     frameCount = 0
-    i = False
+
     w = 1800
     h = 900
 
@@ -347,23 +361,51 @@ def main():
     if colObj != "null":
         raise Exception(f"{colObj = }")
 
-    mainMenuActive = False
-    gameActive = True
+    #GAME ACTIVE ################################## delete after development finished
+    # mainMenuActive = False
+    # gameActive = True
+
+    #Menu Active 
+    mainMenuActive = True
+    gameActive = False
 
     showPitDeathText = False
     showBatMoveText = False
 
     while running:
         
+        # leftMouse, middleMouse, rightMouse = pygame.mouse.get_pressed()
+        # print(leftMouse, middleMouse, rightMouse)
+
         if mainMenuActive:
             screen.blit(bgImg, (1, 1))
+            rect1 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
+            
+            currentSelection = ""
+            
+            
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:           
+                    if rect1.collidepoint(pygame.mouse.get_pos()):
+                        print("Mouse clicked on the rect")
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                        pygame.quit()
+                    if event.key == pygame.K_RETURN:
+                        print("enter hit")
+                        registerSelection(currentSelection) #do something since the current selection has been confirmed e.g start game if that option is selected
         elif gameActive:
+            
             screen.blit(bgImg, (1, 1))
+            
             # screen.fill(bgColour)  # fill before anything else
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # close when x button hit
                     running = False
                     pygame.quit()
+                
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -435,17 +477,21 @@ def main():
                 showBatMoveText = False
                 
             hazardDistance = {'wumpusDistance': wumpusDistance, 'pitDistance': pitDistance, 'batDistance': batDistance}
-            # if wumpusDistance == 1:
-            #     hazardWarning.update({'wumpusDistance': wumpusDistance})
-            # elif pitDistance == 1:
-            #     hazardWarning.update({'pitDistance': pitDistance})
-            # elif batDistance == 1:
-            #     hazardWarning.update({'batDistance': batDistance})
-            showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance)
 
+            showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance)
+        
         pygame.display.update()
         frameCount += fps
         clock.tick(fps)
 
 if __name__ == "__main__":
+    print('# ' + '=' * 78)
+    print('Author: ' + __author__)
+    print('License: ' + __license__)
+    print('Version: ' + __version__)
+    print('Email: ' + __email__)
+    print('Course: ' + __course__)
+    print('Date: ' + __date__)
+    print('Description: ' + __description__)
+    print('# ' + '=' * 78)
     main()
