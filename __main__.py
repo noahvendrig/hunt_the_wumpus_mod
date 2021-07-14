@@ -1,7 +1,7 @@
 
 __author__ = 'Noah Vendrig'
 __license__ = 'MIT' # copy of the license available @ https://prodicus.mit-license.org/
-__version__ = '1.1.6'
+__version__ = '1.1.6' 
 __email__ = 'noah.vendrig@education.nsw.gov.au'
 __github__ = "github.com/noahvendrig" # @noahvendrig
 __course__ = 'Software Design and Development'
@@ -14,7 +14,7 @@ import pygame  # pygame 2.0.1 (SDL 2.0.14, Python 3.8.10) # after activating con
 from sys import exit, float_repr_style
 import numpy
 import random
-from pygame.locals import *
+# from pygame.locals import *
 import re
 import time
 # =====================================================================================
@@ -369,8 +369,8 @@ def main():
     mainMenuActive = True
     gameActive = False
 
-    showPitDeathText = False
-    showBatMoveText = False
+    # showPitDeathText = False
+    # showBatMoveText = False
 
     while running:
         
@@ -378,7 +378,7 @@ def main():
         # print(leftMouse, middleMouse, rightMouse)
 
         if mainMenuActive:
-            screen.blit(bgImg, (1, 1))
+            screen.blit(bgImg, (1, 1)) 
             rect1 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
             
             currentSelection = ""

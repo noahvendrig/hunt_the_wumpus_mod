@@ -362,12 +362,12 @@ def main():
         raise Exception(f"{colObj = }")
 
     #GAME ACTIVE ################################## delete after development finished
-    # mainMenuActive = False
-    # gameActive = True
+    mainMenuActive = False
+    gameActive = True
 
     #Menu Active 
-    mainMenuActive = True
-    gameActive = False
+    # mainMenuActive = True
+    # gameActive = False
 
     showPitDeathText = False
     showBatMoveText = False
@@ -381,7 +381,7 @@ def main():
             screen.blit(bgImg, (1, 1))
             rect1 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
             
-            currentSelection = ""
+            currentSelection = "startBtn"
             
             
             for event in pygame.event.get():
@@ -480,12 +480,12 @@ def main():
 
             showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance)
         
-        pygame.display.update()
-        frameCount += fps
+        frameCount += fps #delete later unless i actually use it
         clock.tick(fps)
+        pygame.display.update()
+        
 
 if __name__ == "__main__":
-    print('# ' + '=' * 78)
     print('Author: ' + __author__)
     print('License: ' + __license__)
     print('Version: ' + __version__)
