@@ -239,6 +239,18 @@ def showBat(screen, batImg):
 def registerSelection(currentSelection):
     pass
 
+class Menu_Btn:
+    def init(self, x, y, txt, w, h):
+        self.x = x
+        self.y = y
+        self.txt = txt
+        self.w = w
+        self.h = h
+
+    def draw(self):
+        pass
+
+
 def main():
 
     graph = {
@@ -382,133 +394,135 @@ def main():
 
     menuSelections = ['startBtn', 'optBtn', 'quitBtn']
     currentSelection = menuSelections.index('startBtn')
-
-    while running:
-        
-        # leftMouse, middleMouse, rightMouse = pygame.mouse.get_pressed()
-        # print(leftMouse, middleMouse, rightMouse)
-
-        if mainMenuActive:
-            screen.blit(menuBg, (1, 1))
-
-            rect1 = pygame.draw.rect(screen,(0,0,255),((w/2),150,150,50))
-            rect2 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
+    try:
+        while running:
             
-            menuText = arcadeFont.render("SAMSON", True, fontColour)  # finds integers in the string e.g. "19" in "n19" to display
-            rect3 = menuText.get_rect(center=(w/2, h/5))
+            # leftMouse, middleMouse, rightMouse = pygame.mouse.get_pressed()
+            # print(leftMouse, middleMouse, rightMouse)
 
-            # screen.blit(menuText, (790,100))
-            screen.blit(menuText, rect3)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:  # close when x button hit
-                    running = False
-                    pygame.quit()
+            if mainMenuActive:
+                screen.blit(menuBg, (1, 1))
+
+                rect1 = pygame.draw.rect(screen,(0,0,255),((w/2),150,150,50))
+                rect2 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
                 
-                if event.type == pygame.MOUSEBUTTONDOWN:           
-                    if rect1.collidepoint(pygame.mouse.get_pos()):
-                        print("Mouse clicked on the rect")
+                menuText = arcadeFont.render("SAMSON", True, fontColour)  # finds integers in the string e.g. "19" in "n19" to display
+                rect3 = menuText.get_rect(center=(w/7, h/5))
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                # screen.blit(menuText, (790,100))
+                screen.blit(menuText, rect3)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:  # close when x button hit
                         running = False
                         pygame.quit()
-                    if event.key == pygame.K_DOWN:
-                        if currentSelection + 1 == len(menuSelections):
-                            currentSelection = 0
-                        else:
-                            currentSelection += 1
-                        print(f'{currentSelection}{menuSelections[currentSelection]}')
-                    if event.key == pygame.K_RETURN:
-                        print("enter hit")
-                        registerSelection(currentSelection) #do something since the current selection has been confirmed e.g start game if that option is selected
-        elif gameActive:
-            
-            screen.blit(bgImg, (1, 1))
-            
-            # screen.fill(bgColour)  # fill before anything else
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:  # close when x button hit
-                    running = False
-                    pygame.quit()
-                
+                    
+                    if event.type == pygame.MOUSEBUTTONDOWN:           
+                        if rect1.collidepoint(pygame.mouse.get_pos()):
+                            print("Mouse clicked on the rect")
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            running = False
+                            pygame.quit()
+                        if event.key == pygame.K_DOWN:
+                            if currentSelection + 1 == len(menuSelections):
+                                currentSelection = 0
+                            else:
+                                currentSelection += 1
+                            print(f'{currentSelection}{menuSelections[currentSelection]}')
+                        if event.key == pygame.K_RETURN:
+                            print("enter hit")
+                            if menuSelections[currentSelection] == "startBtn"
+                            registerSelection(currentSelection) #do something since the current selection has been confirmed e.g start game if that option is selected
+            elif gameActive:
+                
+                screen.blit(bgImg, (1, 1))
+                
+                # screen.fill(bgColour)  # fill before anything else
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:  # close when x button hit
                         running = False
                         pygame.quit()
+                    
 
-                    if event.key == pygame.K_LEFT:
-                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
-                            graph,
-                            currNode,
-                            0,
-                            wumpusInstance,
-                            pits,
-                            bats,
-                            playerInstance,
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            running = False
+                            pygame.quit()
+
+                        if event.key == pygame.K_LEFT:
+                            currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
+                                graph,
+                                currNode,
+                                0,
+                                wumpusInstance,
+                                pits,
+                                bats,
+                                playerInstance,
+                            )
+
+                        if event.key == pygame.K_UP:
+                            currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
+                                graph,
+                                currNode,
+                                1,
+                                wumpusInstance,
+                                pits,
+                                bats,
+                                playerInstance,
+                            )
+
+                        if event.key == pygame.K_RIGHT:
+                            currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
+                                graph,
+                                currNode,
+                                2,
+                                wumpusInstance,
+                                pits,
+                                bats,
+                                playerInstance,
+                            )
+
+                        colObj = playerInstance.detectHazardCollision(
+                            currNode, wumpusInstance, pits, bats
                         )
 
-                    if event.key == pygame.K_UP:
-                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
-                            graph,
-                            currNode,
-                            1,
-                            wumpusInstance,
-                            pits,
-                            bats,
-                            playerInstance,
-                        )
+                        if colObj != "null":
+                            startTime = time.time()
+                            if colObj.type == "wumpus":
+                                print(f"just hit the WUMPUS at {colObj.pos}")
+                                wumpusDeath(fontColour, font, screen)
 
-                    if event.key == pygame.K_RIGHT:
-                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
-                            graph,
-                            currNode,
-                            2,
-                            wumpusInstance,
-                            pits,
-                            bats,
-                            playerInstance,
-                        )
+                            elif colObj.type == "pit":
+                                print(f"just hit a PIT at {colObj.pos}")
+                                # pitDeath(fontColour, font, screen)
+                                showPitDeathText = True
+                                # startTime = time.time()
 
-                    colObj = playerInstance.detectHazardCollision(
-                        currNode, wumpusInstance, pits, bats
-                    )
+                            elif colObj.type == "bat":
+                                print(f"just hit a BAT at {colObj.pos}")
+                                currNode = getRandomNode()
+                                # batTextTime = time.time()
+                                showBatMoveText = True
 
-                    if colObj != "null":
-                        startTime = time.time()
-                        if colObj.type == "wumpus":
-                            print(f"just hit the WUMPUS at {colObj.pos}")
-                            wumpusDeath(fontColour, font, screen)
-
-                        elif colObj.type == "pit":
-                            print(f"just hit a PIT at {colObj.pos}")
-                            # pitDeath(fontColour, font, screen)
-                            showPitDeathText = True
-                            # startTime = time.time()
-
-                        elif colObj.type == "bat":
-                            print(f"just hit a BAT at {colObj.pos}")
-                            currNode = getRandomNode()
-                            # batTextTime = time.time()
-                            showBatMoveText = True
-
-            if showPitDeathText:
-                showTimedText(400, 300, 10, "just hit a PIT oof", fontColour, font, screen, startTime)
-            
-            elif showBatMoveText:
-                showTimedText(400, 100, 1, batImg, fontColour, font, screen, startTime)
-            else:
-                showPitDeathText = False
-                showBatMoveText = False
+                if showPitDeathText:
+                    showTimedText(400, 300, 10, "just hit a PIT oof", fontColour, font, screen, startTime)
                 
-            hazardDistance = {'wumpusDistance': wumpusDistance, 'pitDistance': pitDistance, 'batDistance': batDistance}
+                elif showBatMoveText:
+                    showTimedText(400, 100, 1, batImg, fontColour, font, screen, startTime)
+                else:
+                    showPitDeathText = False
+                    showBatMoveText = False
+                    
+                hazardDistance = {'wumpusDistance': wumpusDistance, 'pitDistance': pitDistance, 'batDistance': batDistance}
 
-            showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance)
-        
-        frameCount += fps #delete later unless i actually use it
-        clock.tick(fps)
-        pygame.display.update()
-        
+                showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance)
+            
+            frameCount += fps #delete later unless i actually use it
+            clock.tick(fps)
+            pygame.display.update()
+    except:
+        print("error")    
 
 if __name__ == "__main__":
     print('Author: ' + __author__)
