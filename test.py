@@ -280,6 +280,8 @@ def main():
 
     w = 1800
     h = 900
+    # w = 900
+    # h = 450
 
     bgColour = (255, 255, 255)
     running = True
@@ -290,6 +292,8 @@ def main():
 
     # font = ("./arial.tff", 32)
     font = pygame.font.Font("freesansbold.ttf", 32)
+
+    arcadeFont = pygame.font.Font("font/manaspc.ttf", (int((w+h)/45)))
 
     # currNode = "n1"  # set the starting node
     # settings: ##########################################################
@@ -345,6 +349,10 @@ def main():
     ################################################
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
+    
+    menuBg = pygame.image.load("./img/menu_bg.jpg")
+    menuBg = pygame.transform.scale(menuBg, (w,h))
+
 
     batImg = pygame.image.load("./img/bats.png")
     batImg = pygame.transform.scale(batImg, (500, 500))
@@ -362,15 +370,18 @@ def main():
         raise Exception(f"{colObj = }")
 
     #GAME ACTIVE ################################## delete after development finished
-    mainMenuActive = False
-    gameActive = True
+    # mainMenuActive = False
+    # gameActive = True
 
     #Menu Active 
-    # mainMenuActive = True
-    # gameActive = False
+    mainMenuActive = True
+    gameActive = False
 
     showPitDeathText = False
     showBatMoveText = False
+
+    menuSelections = ['startBtn', 'optBtn', 'quitBtn']
+    currentSelection = menuSelections.index('startBtn')
 
     while running:
         
@@ -378,13 +389,21 @@ def main():
         # print(leftMouse, middleMouse, rightMouse)
 
         if mainMenuActive:
-            screen.blit(bgImg, (1, 1))
-            rect1 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
+            screen.blit(menuBg, (1, 1))
+
+            rect1 = pygame.draw.rect(screen,(0,0,255),((w/2),150,150,50))
+            rect2 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
             
-            currentSelection = "startBtn"
-            
-            
+            menuText = arcadeFont.render("SAMSON", True, fontColour)  # finds integers in the string e.g. "19" in "n19" to display
+            rect3 = menuText.get_rect(center=(w/2, h/5))
+
+            # screen.blit(menuText, (790,100))
+            screen.blit(menuText, rect3)
             for event in pygame.event.get():
+                if event.type == pygame.QUIT:  # close when x button hit
+                    running = False
+                    pygame.quit()
+                
                 if event.type == pygame.MOUSEBUTTONDOWN:           
                     if rect1.collidepoint(pygame.mouse.get_pos()):
                         print("Mouse clicked on the rect")
@@ -393,6 +412,12 @@ def main():
                     if event.key == pygame.K_ESCAPE:
                         running = False
                         pygame.quit()
+                    if event.key == pygame.K_DOWN:
+                        if currentSelection + 1 == len(menuSelections):
+                            currentSelection = 0
+                        else:
+                            currentSelection += 1
+                        print(f'{currentSelection}{menuSelections[currentSelection]}')
                     if event.key == pygame.K_RETURN:
                         print("enter hit")
                         registerSelection(currentSelection) #do something since the current selection has been confirmed e.g start game if that option is selected
