@@ -1,16 +1,16 @@
-
 __author__ = 'Noah Vendrig'
-__license__ = 'MIT' # copy of the license available @ https://prodicus.mit-license.org/
+__license__ = 'MIT'  # copy of the license available @ https://prodicus.mit-license.org/
 __version__ = '1.0.1'
 __email__ = 'noah.vendrig@education.nsw.gov.au'
-__github__ = "github.com/noahvendrig" # @noahvendrig
+__github__ = "github.com/noahvendrig"  # @noahvendrig
 __course__ = 'Software Design and Development'
 __date__ = '10/07/2021'
 __description__ = 'Modern Recreation of text-based adventure game Hunt the Wumpus (1973)'
-__specifications__ = "noahvendrig.com/#about" #specifications available here
+__specifications__ = "noahvendrig.com/#about"  # specifications available here
 
 # ====================================== Imports ======================================
-import pygame  # pygame 2.0.1 (SDL 2.0.14, Python 3.8.10) # after activating conda env run the following in cmd: 'pip install pygame'
+# pygame 2.0.1 (SDL 2.0.14, Python 3.8.10) # after activating conda env run the following in cmd: 'pip install pygame'
+import pygame
 from sys import exit, float_repr_style
 import numpy
 import random
@@ -18,6 +18,7 @@ from pygame.locals import *
 import re
 import time
 # =====================================================================================
+
 
 class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
     def __init__(self):  # function that activates on start
@@ -89,6 +90,7 @@ def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
     else:
         return currLevel
 
+
 def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
     # text = None
     # if isinstance(content, (float, int, str, list, dict, tuple)):
@@ -100,17 +102,18 @@ def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
     try:
         text = font.render(content, True, fontColour)
     except:
-        text= content
+        text = content
 
-    if time.time() - startTime < duration: # while it hasnt been duration in seconds
+    if time.time() - startTime < duration:  # while it hasnt been duration in seconds
         screen.blit(text, (x, y))  # draw on screen
         pygame.display.update()
-    
+
 
 def validInputReceived(graph, currNode, keyNum, wumpusInstance, pits, bats, playerInstance):
 
     currNode = changeNode(graph, currNode, keyNum)
-    wumpusDist = min(findHazard(graph, currNode, wump.pos) for wump in [wumpusInstance]) # change to wumpus list
+    wumpusDist = min(findHazard(graph, currNode, wump.pos)
+                     for wump in [wumpusInstance])  # change to wumpus list
     # wumpusDist = findHazard(graph, currNode, wumpusInstance.pos)
     pitDist = min([findHazard(graph, currNode, pit.pos) for pit in pits])
     batDist = min([findHazard(graph, currNode, bat.pos) for bat in bats])
@@ -151,17 +154,17 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance):
     currRoom_Y = h / 2
 
     # DISTANCE
-    
+
     for key in hazardDistance:
         if hazardDistance[key] == 1:
             # print(f"{key} = {hazardDistance[key]}")
             if key == "wumpusDistance":
-                
+
                 distanceTxt = font.render(
-                        "THE WUMPUS IS NEARBY",
-                        True,
-                        fontColour,  # finds integers in the string e.g. "19" in "n19" to display
-                    )
+                    "THE WUMPUS IS NEARBY",
+                    True,
+                    fontColour,  # finds integers in the string e.g. "19" in "n19" to display
+                )
                 # distanceTxt = font.render(
                 #     f"{key} is %s nodes away" % hazardDistance[key],
                 #     True,
@@ -169,7 +172,7 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance):
                 # )
                 screen.blit(distanceTxt, (300, 400))  # draw on screen
             if key == "pitDistance":
-            # print(f"{key} = {hazardDistance[key]}")
+                # print(f"{key} = {hazardDistance[key]}")
                 distanceTxt = font.render(
                     "THERE IS A PIT NEARBY",
                     True,
@@ -177,7 +180,7 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance):
                 )
                 screen.blit(distanceTxt, (300, 500))  # draw on screen
             if key == "batDistance":
-            # print(f"{key} = {hazardDistance[key]}")
+                # print(f"{key} = {hazardDistance[key]}")
                 distanceTxt = font.render(
                     "THERE ARE BATS NEARBY",
                     True,
@@ -221,7 +224,7 @@ def getRandomNode():
 
 
 def wumpusDeath(fontColour, font, screen):
-    deathTxt = font.render("YOU GOT KILLED BY THE WUMPUS",True,fontColour)
+    deathTxt = font.render("YOU GOT KILLED BY THE WUMPUS", True, fontColour)
     screen.blit(deathTxt, (200, 350))  # draw on screen
     pass
 
@@ -229,15 +232,18 @@ def wumpusDeath(fontColour, font, screen):
 def pitDeath(fontColour, font, screen):
     # deathTxt = font.render("YOU FELL INTO A PIT",True,fontColour)
     # screen.blit(deathTxt, (200, 350))  # draw on screen
-    showTimedText(300, 400, 5, "YOU FELL INTO A PIT LO IT WORKS", fontColour, font, screen)
+    showTimedText(300, 400, 5, "YOU FELL INTO A PIT LO IT WORKS",
+                  fontColour, font, screen)
 
 
 def showBat(screen, batImg):
     screen.blit(batImg, (400, 100))
     pygame.display.update()
 
+
 def registerSelection(currentSelection):
     pass
+
 
 class Menu_Btn:
     def init(self, x, y, txt, w, h):
@@ -333,8 +339,8 @@ def main():
     # for w in range(wumpusNum):
     #     wumpusInstance = wumpus()
     #     wumpusNodes.append(wumpusInstance.pos)
-    batNodes = []  #################################### delete later
-    pitNodes = []  #################################### delete later
+    batNodes = []  # delete later
+    pitNodes = []  # delete later
 
     for b in range(batsNum):
         batInstance = bat()
@@ -355,16 +361,15 @@ def main():
     print(f"{filledNodes = }")
     print(f"{wumpusInstance.pos = }")
 
-    print(f"{pitNodes = }")  #################################### delete later
-    print(f"{batNodes = }")  #################################### delete later
+    print(f"{pitNodes = }")  # delete later
+    print(f"{batNodes = }")  # delete later
 
     ################################################
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
-    
-    menuBg = pygame.image.load("./img/menu_bg.jpg")
-    menuBg = pygame.transform.scale(menuBg, (w,h))
 
+    menuBg = pygame.image.load("./img/menu_bg.jpg")
+    menuBg = pygame.transform.scale(menuBg, (w, h))
 
     batImg = pygame.image.load("./img/bats.png")
     batImg = pygame.transform.scale(batImg, (500, 500))
@@ -373,19 +378,21 @@ def main():
 
     clock = pygame.time.Clock()
 
-    wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [wumpusInstance])  # calculate initial wumpus distance from spawn
+    wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [
+                         wumpusInstance])  # calculate initial wumpus distance from spawn
     pitDistance = min([findHazard(graph, currNode, pit.pos) for pit in pits])
     batDistance = min([findHazard(graph, currNode, bat.pos) for bat in bats])
 
-    colObj = playerInstance.detectHazardCollision(currNode, wumpusInstance, pits, bats)
+    colObj = playerInstance.detectHazardCollision(
+        currNode, wumpusInstance, pits, bats)
     if colObj != "null":
         raise Exception(f"{colObj = }")
 
-    #GAME ACTIVE ################################## delete after development finished
+    # GAME ACTIVE ################################## delete after development finished
     # mainMenuActive = False
     # gameActive = True
 
-    #Menu Active 
+    # Menu Active
     mainMenuActive = True
     gameActive = False
 
@@ -396,17 +403,20 @@ def main():
     currentSelection = menuSelections.index('startBtn')
     try:
         while running:
-            
+
             # leftMouse, middleMouse, rightMouse = pygame.mouse.get_pressed()
             # print(leftMouse, middleMouse, rightMouse)
 
             if mainMenuActive:
                 screen.blit(menuBg, (1, 1))
 
-                rect1 = pygame.draw.rect(screen,(0,0,255),((w/2),150,150,50))
-                rect2 = pygame.draw.rect(screen,(0,0,255),(200,150,100,50))
-                
-                menuText = arcadeFont.render("SAMSON", True, fontColour)  # finds integers in the string e.g. "19" in "n19" to display
+                rect1 = pygame.draw.rect(
+                    screen, (0, 0, 255), ((w/2), 150, 150, 50))
+                rect2 = pygame.draw.rect(
+                    screen, (0, 0, 255), (200, 150, 100, 50))
+
+                # finds integers in the string e.g. "19" in "n19" to display
+                menuText = arcadeFont.render("SAMSON", True, fontColour)
                 rect3 = menuText.get_rect(center=(w/7, h/5))
 
                 # screen.blit(menuText, (790,100))
@@ -415,8 +425,8 @@ def main():
                     if event.type == pygame.QUIT:  # close when x button hit
                         running = False
                         pygame.quit()
-                    
-                    if event.type == pygame.MOUSEBUTTONDOWN:           
+
+                    if event.type == pygame.MOUSEBUTTONDOWN:
                         if rect1.collidepoint(pygame.mouse.get_pos()):
                             print("Mouse clicked on the rect")
 
@@ -429,21 +439,23 @@ def main():
                                 currentSelection = 0
                             else:
                                 currentSelection += 1
-                            print(f'{currentSelection}{menuSelections[currentSelection]}')
+                            print(
+                                f'{currentSelection}{menuSelections[currentSelection]}')
                         if event.key == pygame.K_RETURN:
                             print("enter hit")
-                            if menuSelections[currentSelection] == "startBtn"
-                            registerSelection(currentSelection) #do something since the current selection has been confirmed e.g start game if that option is selected
+                            if menuSelections[currentSelection] == "startBtn":
+
+                                # do something since the current selection has been confirmed e.g start game if that option is selected
+                                registerSelection(currentSelection)
             elif gameActive:
-                
+
                 screen.blit(bgImg, (1, 1))
-                
+
                 # screen.fill(bgColour)  # fill before anything else
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:  # close when x button hit
                         running = False
                         pygame.quit()
-                    
 
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -506,23 +518,28 @@ def main():
                                 showBatMoveText = True
 
                 if showPitDeathText:
-                    showTimedText(400, 300, 10, "just hit a PIT oof", fontColour, font, screen, startTime)
-                
+                    showTimedText(400, 300, 10, "just hit a PIT oof",
+                                  fontColour, font, screen, startTime)
+
                 elif showBatMoveText:
-                    showTimedText(400, 100, 1, batImg, fontColour, font, screen, startTime)
+                    showTimedText(400, 100, 1, batImg, fontColour,
+                                  font, screen, startTime)
                 else:
                     showPitDeathText = False
                     showBatMoveText = False
-                    
-                hazardDistance = {'wumpusDistance': wumpusDistance, 'pitDistance': pitDistance, 'batDistance': batDistance}
 
-                showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance)
-            
-            frameCount += fps #delete later unless i actually use it
+                hazardDistance = {'wumpusDistance': wumpusDistance,
+                                  'pitDistance': pitDistance, 'batDistance': batDistance}
+
+                showText(currNode, w, h, fontColour, font,
+                         screen, graph, hazardDistance)
+
+            frameCount += fps  # delete later unless i actually use it
             clock.tick(fps)
             pygame.display.update()
     except:
-        print("error")    
+        print("error")
+
 
 if __name__ == "__main__":
     print('Author: ' + __author__)
