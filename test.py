@@ -426,14 +426,12 @@ def main():
         if mainMenuActive:
             screen.blit(menuBg, (1, 1))
 
-            
             titleText.draw(arcadeFontMedium, screen, (0,0,0))
             playBtn.draw(arcadeFontMedium, screen)
             optBtn.draw(arcadeFontMedium, screen)
             quitBtn.draw(arcadeFontMedium, screen)
             versionText.draw(arcadeFontSmall, screen)
             
-
             selectionRectBorder = pygame.draw.rect(screen, (255, 84, 5), pygame.Rect((w/15)-5, currMenuSelection.y+2, 415, 80),1,8)
             pygame.gfxdraw.box(screen, pygame.Rect((w/15)-5,currMenuSelection.y+2, 414, 79), (0,0,0,7))
 
