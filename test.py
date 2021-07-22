@@ -17,6 +17,7 @@ import random
 from pygame.locals import *
 import re
 import time
+import ctypes
 # =====================================================================================
 
 
@@ -296,10 +297,16 @@ def main():
     # arialFont = pygame.font.SysFont("Arial", 30)
     frameCount = 0
 
-    w = 1800
-    h = 900
-    # w = 900
-    # h = 450
+    user32 = ctypes.windll.user32
+    screenSize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+    if screenSize[0]/screenSize[1] != 16/9:
+        pass
+    else:
+        w = screenSize[0]
+        h = screenSize[1]
+
+    # w = 1600
+    # h = 500
 
     bgColour = (255, 255, 255)
     running = True
@@ -368,7 +375,7 @@ def main():
     bgImg = pygame.image.load("./img/bg.jpg")
     bgImg = pygame.transform.scale(bgImg, (w, h))
 
-    menuBg = pygame.image.load("./img/menu_bg.jpg")
+    menuBg = pygame.image.load("./img/menu_bg.png")
     menuBg = pygame.transform.scale(menuBg, (w, h))
 
     batImg = pygame.image.load("./img/bats.png")
@@ -400,9 +407,9 @@ def main():
     showBatMoveText = False
 
 
-    playBtn = Menu_Btn("play",w/13, (h/5)+80, "Play", w,h)
-    optBtn = Menu_Btn("opt",w/13, (h/5)+160, "Options", w,h)
-    quitBtn = Menu_Btn("quit",w/13, (h/5)+240, "Quit", w,h)
+    playBtn = Menu_Btn("play",w/14, (h/5)+80, "Play", w,h)
+    optBtn = Menu_Btn("opt",w/14, (h/5)+160, "Options", w,h)
+    quitBtn = Menu_Btn("quit",w/14, (h/5)+240, "Quit", w,h)
 
     # menuSelections = ['startBtn', 'optBtn', 'quitBtn']
     menuSelections = [playBtn, optBtn, quitBtn]
@@ -423,14 +430,16 @@ def main():
 
                 # finds integers in the string e.g. "19" in "n19" to display
                 menuText = arcadeFont.render("SAMSON", True, fontColour)
-                rect3 = menuText.get_rect(topleft=(w/13, h/5))
+                rect3 = menuText.get_rect(topleft=(w/15, h/5))
+                screen.blit(menuText, rect3)
+                
                 playBtn.draw(arcadeFont, screen)
                 optBtn.draw(arcadeFont, screen)
                 quitBtn.draw(arcadeFont, screen)
                 # screen.blit(menuText, (790,100))
-                screen.blit(menuText, rect3)
+                
 
-                selectionRect = pygame.draw.rect(screen, (255, 84, 5), pygame.Rect((w/13)-5, currMenuSelection.y, 375, 75),2,8)
+                selectionRect = pygame.draw.rect(screen, (255, 84, 5), pygame.Rect((w/15)-5, currMenuSelection.y, 375, 75),2,8)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:  # close when x button hit
@@ -443,9 +452,9 @@ def main():
                         #     print("Mouse clicked on the rect")
 
                     if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            running = False
-                            pygame.quit()
+                        # if event.key == pygame.K_ESCAPE:
+                        #     running = False
+                        #     pygame.quit()
 
                         if event.key == pygame.K_DOWN:
                             if menuSelections.index(currMenuSelection) + 1 == len(menuSelections):

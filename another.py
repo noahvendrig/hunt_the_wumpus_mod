@@ -93,8 +93,3 @@
 
 # 	pygame.display.update()
 # 	clock.tick(60)
-
-def foo(x, y, *args):
-	print(str(x) + str(y) + str(args[0]))
-
-foo(2, 3, "4", 5, 6)
