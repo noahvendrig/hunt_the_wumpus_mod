@@ -252,11 +252,12 @@ class TextObj():
         self.h = h
         self.name = name
 
-    def draw(self, font, screen, fontColour=(255,255,255)):
+    def draw(self, font, screen, fontColour=(255, 255, 255)):
         btnText = font.render(self.txt, True, fontColour)
         posRect = btnText.get_rect(topleft=(self.x, self.y))
         # posRect = pygame.draw.rect(screen, [0, 0, 0], [50, 50, 90, 180], 1)
         screen.blit(btnText, posRect)
+
 
 def main():
 
@@ -406,18 +407,18 @@ def main():
     showPitDeathText = False
     showBatMoveText = False
 
-    titleText = TextObj("title",w/14, (h/4)-20, "SAMSON", w,h)
-    playBtn = TextObj("play",w/14, (h/4)+62, "Play", w,h)
-    optBtn = TextObj("opt",w/14, (h/4)+152, "Options", w,h)
-    quitBtn = TextObj("quit",w/14, (h/4)+242, "Quit", w,h)
+    titleText = TextObj("title", w/14, (h/4)-20, "SAMSON", w, h)
+    playBtn = TextObj("play", w/14, (h/4)+62, "Play", w, h)
+    optBtn = TextObj("opt", w/14, (h/4)+152, "Options", w, h)
+    quitBtn = TextObj("quit", w/14, (h/4)+242, "Quit", w, h)
 
-    versionText = TextObj('version', 92*w/100, h-50, str(__version__), w,h)
+    versionText = TextObj('version', 92*w/100, h-50, str(__version__), w, h)
 
     # menuSelections = ['startBtn', 'optBtn', 'quitBtn']
     menuSelections = [playBtn, optBtn, quitBtn]
     # currMenuSelection = menuSelections.index('startBtn')
     currMenuSelection = playBtn
-    #try:
+    # try:
     while running:
 
         # leftMouse, middleMouse, rightMouse = pygame.mouse.get_pressed()
@@ -426,14 +427,16 @@ def main():
         if mainMenuActive:
             screen.blit(menuBg, (1, 1))
 
-            titleText.draw(arcadeFontMedium, screen, (0,0,0))
+            titleText.draw(arcadeFontMedium, screen, (0, 0, 0))
             playBtn.draw(arcadeFontMedium, screen)
             optBtn.draw(arcadeFontMedium, screen)
             quitBtn.draw(arcadeFontMedium, screen)
             versionText.draw(arcadeFontSmall, screen)
-            
-            selectionRectBorder = pygame.draw.rect(screen, (255, 84, 5), pygame.Rect((w/15)-5, currMenuSelection.y+2, 415, 80),1,8)
-            pygame.gfxdraw.box(screen, pygame.Rect((w/15)-5,currMenuSelection.y+2, 414, 79), (0,0,0,7))
+
+            selectionRectBorder = pygame.draw.rect(screen, (255, 84, 5), pygame.Rect(
+                (w/15)-5, currMenuSelection.y+2, 415, 80), 1, 8)
+            pygame.gfxdraw.box(screen, pygame.Rect(
+                (w/15)-5, currMenuSelection.y+2, 414, 79), (0, 0, 0, 7))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # close when x button hit
@@ -454,13 +457,15 @@ def main():
                         if menuSelections.index(currMenuSelection) + 1 == len(menuSelections):
                             currMenuSelection = menuSelections[0]
                         else:
-                            currMenuSelection = menuSelections[menuSelections.index(currMenuSelection) + 1]
+                            currMenuSelection = menuSelections[menuSelections.index(
+                                currMenuSelection) + 1]
                         # print(currMenuSelection.name)
                     if event.key == pygame.K_UP:
                         if menuSelections.index(currMenuSelection) + -1 == 0:
                             currMenuSelection = menuSelections[0]
                         else:
-                            currMenuSelection = menuSelections[menuSelections.index(currMenuSelection) - 1]
+                            currMenuSelection = menuSelections[menuSelections.index(
+                                currMenuSelection) - 1]
 
                     if event.key == pygame.K_RETURN:
                         if currMenuSelection.name == "play":
@@ -473,7 +478,6 @@ def main():
                         if currMenuSelection.name == "quit":
                             running = False
                             pygame.quit()
-
 
         elif gameActive:
 
@@ -547,20 +551,20 @@ def main():
 
             if showPitDeathText:
                 showTimedText(400, 300, 10, "just hit a PIT oof",
-                                fontColour, font, screen, startTime)
+                              fontColour, font, screen, startTime)
 
             elif showBatMoveText:
                 showTimedText(400, 100, 1, batImg, fontColour,
-                                font, screen, startTime)
+                              font, screen, startTime)
             else:
                 showPitDeathText = False
                 showBatMoveText = False
 
             hazardDistance = {'wumpusDistance': wumpusDistance,
-                                'pitDistance': pitDistance, 'batDistance': batDistance}
+                              'pitDistance': pitDistance, 'batDistance': batDistance}
 
             showText(currNode, w, h, fontColour, font,
-                        screen, graph, hazardDistance)
+                     screen, graph, hazardDistance)
 
         frameCount += fps  # delete later unless i actually use it
         clock.tick(fps)
