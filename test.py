@@ -108,7 +108,7 @@ def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
 
     if time.time() - startTime < duration:  # while it hasnt been duration in seconds
         screen.blit(text, (x, y))  # draw on screen
-        pygame.display.update()
+        # pygame.display.update()
 
 
 def validInputReceived(graph, currNode, keyNum, wumpusInstance, pits, bats, playerInstance):
@@ -163,7 +163,7 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance):
             if key == "wumpusDistance":
 
                 distanceTxt = font.render(
-                    "THE WUMPUS IS NEARBY",
+                    "Samson is nearby...",
                     True,
                     fontColour,  # finds integers in the string e.g. "19" in "n19" to display
                 )
@@ -550,6 +550,7 @@ def main():
                                 fontColour, font, screen, startTime)
 
             elif showBatMoveText:
+                pass
                 showTimedText(400, 100, 1, batImg, fontColour,
                                 font, screen, startTime)
             else:
@@ -579,3 +580,6 @@ if __name__ == "__main__":
     print('Description: ' + __description__)
     print('# ' + '=' * 78)
     main()
+
+
+
