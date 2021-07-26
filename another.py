@@ -18,10 +18,10 @@
 #                 print(f'{currentSelection}, {menuSelections[currentSelection]}')
     
 from PIL import Image
-img = Image.open("./img/bg2.png")
+img = Image.open("./img/main_bg.png")
 pixImg = img.resize((256,256), Image.BILINEAR)
 result = pixImg.resize(img.size, Image.NEAREST)
-result.save('img/mod12.png')
+result.save('img/mod22.png')
 result.show()
 
 # import pygame, sys
