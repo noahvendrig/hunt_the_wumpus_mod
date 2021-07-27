@@ -1,6 +1,6 @@
 __author__ = 'Noah Vendrig'
 __license__ = 'MIT'  # copy of the license available @ https://prodicus.mit-license.org/
-__version__ = '1.1.3'
+__version__ = '2.1.0'
 __email__ = 'noah.vendrig@education.nsw.gov.au'
 __github__ = "github.com/noahvendrig"  # @noahvendrig
 __course__ = 'Software Design and Development'
