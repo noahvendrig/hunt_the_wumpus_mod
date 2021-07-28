@@ -1,15 +1,16 @@
 __author__ = 'Noah Vendrig'
 __license__ = 'MIT'  # copy of the license available @ https://prodicus.mit-license.org/
-__version__ = '2.1.0'
+__version__ = '2.5'
 __email__ = 'noah.vendrig@education.nsw.gov.au'
 __github__ = "github.com/noahvendrig"  # @noahvendrig
 __course__ = 'Software Design and Development'
-__date__ = '10/07/2021'
-__description__ = 'Modern Recreation of text-based adventure game Hunt the Wumpus (1973)'
+__date__ = '30/07/2021'
+__description__ = '\'Samson\' is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973)'
 __specifications__ = "noahvendrig.com/#about"  # specifications available here
-
+__pyver__ = '3.8.10'
+__pygamever__ = '2.0.1'
 # ====================================== Imports ======================================
-# pygame 2.0.1 (SDL 2.0.14, Python 3.8.10) # after activating conda env run the following in cmd: 'pip install pygame'
+# pygame 2.0.1 (SDL 2.0.14, Python 3.8.10)
 import pygame
 # from sys import exit, float_repr_style
 import sys
@@ -763,6 +764,9 @@ if __name__ == "__main__":
     print('Course: ' + __course__)
     print('Date: ' + __date__)
     print('Description: ' + __description__)
+    print("\n")
+    print("Python "+ __pyver__)
+    print("Pygame "+ __pygamever__)
     print('# ' + '=' * 78)
     main()
 
