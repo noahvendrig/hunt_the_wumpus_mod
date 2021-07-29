@@ -361,35 +361,39 @@ def main():
     user32 = ctypes.windll.user32
     screenSize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(
         1)  # get the resolution of the user's computer
-    if screenSize[0]/screenSize[1] != 16/9:
+    if screenSize[0]/screenSize[1] != 16/9:  # if the resolution is not 16:9
         # TODO: make the game window size shrink so that a 16:9 ratio is maintained but fill the excess with a black background
-        w = screenSize[0]
-        h = screenSize[1]
+        w = screenSize[0]  # width of the screen
+        h = screenSize[1]  # height of the screen
     else:
-        w = screenSize[0]
-        h = screenSize[1]
+        w = screenSize[0]  # width of the screen
+        h = screenSize[1]  # height of the screen
 
-    # w = 1600
-    # h = 500
+    bgColour = (255, 255, 255)  # background colour to white
+    running = True  # the game is running
 
-    bgColour = (255, 255, 255)
-    running = True
-
-    pygame.display.set_caption("Hunt the Wumpus")
+    # Set the name of the window to 'Samson'
+    pygame.display.set_caption("Samson")
+    # Set the resolution of the screen
     screen = pygame.display.set_mode((w, h))
-    fontColour = (0, 0, 0)
+    fontColour = (0, 0, 0)  # default font colour I'm using is white
 
     # font = ("./arial.tff", 32)
+    # use the free sans bold font
     font = pygame.font.Font("freesansbold.ttf", 32)
 
+    # also use an arcade style font (medium size)
     arcadeFontMedium = pygame.font.Font("font/arcade.ttf", (int((w+h)/45)))
+    # also use an arcade style font (small size)
     arcadeFontSmall = pygame.font.Font("font/arcade.ttf", (int((w+h)/100)))
     # currNode = "n1"  # set the starting node
     # settings: ##########################################################
+    # set frames per second of the game (not really important since there aren't any animations however it is needed for the game clock)
     fps = 25
 
     ################################################
     main_bg = pygame.image.load("./img/main_bg.png")
+    # ensure the image covers the whole window by setting its width and height to the screen's resolution
     main_bg = pygame.transform.scale(main_bg, (w, h))
 
     menuBg = pygame.image.load("./img/menu_bg.png")
@@ -398,54 +402,58 @@ def main():
     batImg = pygame.image.load("./img/bats.png")
     batImg = pygame.transform.scale(batImg, (500, 500))
 
-    # print(f"{type(batImg) = }")
-
-    clock = pygame.time.Clock()
+    clock = pygame.time.Clock()  # create game clock
 
     # GAME ACTIVE ################################## delete after development finished
     # mainMenuActive = False
     # gameActive = True
 
-    # Menu Active
+    # Menu Active, and the game is not currently running on startup
     mainMenuActive = True
     gameActive = False
 
     showPitDeathText = False
     showBatMoveText = False
-
+    # Text needed for the main menu
+    # Create instances of a TextObj which is used to display text on the screen (in this case the buttons and title text)
     titleText = TextObj("title", w/14, (h/4)-20, "SAMSON", w, h)
     playBtn = TextObj("play", w/14, (h/4)+62, "Play", w, h)
     optBtn = TextObj("opt", w/14, (h/4)+152, "Options", w, h)
+
     # leaderboardBtn = TextObj("leaderboard",w/14, (h/4)+242, "Leaderboard", w,h)
     quitBtn = TextObj("quit", w/14, (h/4)+242, "Quit", w, h)  # 322
 
     versionText = TextObj('version', 92*w/100, h-50, str(__version__), w, h)
+    # A list with all the menu selections
     menuSelections = [playBtn, optBtn, quitBtn]
     # menuSelections = [playBtn, optBtn, leaderboardBtn, quitBtn]
 
     currMenuSelection = playBtn
     initGame = True
 ####################################################################################
-    while running:
+    while running:  # while the game is running,
 
-        if initGame:
+        if initGame:  # we need to initialise the game when we first start it up or restart. This just runs in the background while the menu is open so the game is already created when the user clicks play
             print("---------------------------GAME STARTED-----------------------------")
-            batsNum = 2
-            pitNum = 2
+            batsNum = 2  # number of bats to be generated
+            pitNum = 2  # number of pits to be generated
 
+            # list of nodes in the graph that are occupied (by either player or hazards)
             filledNodes = []
-            playerInstance = player()
+            playerInstance = player()  # create an instance of the player class
             print(f"{playerInstance.pos = }")
+            # add the player's starting position to the list of filled nodes (so we don't try to add hazards onto it.)
             filledNodes.append(playerInstance.pos)
 
-            wumpusInstance = wumpus()
+            wumpusInstance = wumpus()  # create an instance of the wumpus class
+            # make sure the wumpus is not on the same node as another object in the game(as the player)
             while wumpusInstance.pos in filledNodes:
                 wumpusInstance.pos == getRandomNode()
             filledNodes.append(wumpusInstance.pos)
 
             currNode = playerInstance.pos
             # print(f"initial {currNode = }")
-            bats = []
+            bats = []  # empty list fo
             pits = []
             # wumpusNum = 1
             # wumpusNodes = []
@@ -453,63 +461,79 @@ def main():
             # for w in range(wumpusNum):
             #     wumpusInstance = wumpus()
             #     wumpusNodes.append(wumpusInstance.pos)
-            batNodes = []  # delete later
-            pitNodes = []  # delete later
+            # used for testing to keep track of the locations of the pits (for debugging)
+            batNodes = []
+            # used for testing to keep track of the locations of the pits (for debugging)
+            pitNodes = []
 
+            # create the specified amount bat instances and add them to the bat list
             for b in range(batsNum):
-                batInstance = bat()
+                batInstance = bat()  # create new bat instance
+
+                # make sure the bats is not on the same node as another object in the game(as the player)
                 while batInstance.pos in filledNodes:
+                    # set the instances position to another random node
                     batInstance.pos = getRandomNode()
-                bats.append(batInstance)
+                bats.append(batInstance)  # add the bat to the list of bats
+                # add the bat's position to the list of filled nodes
                 filledNodes.append(batInstance.pos)
                 batNodes.append(batInstance.pos)
 
+            # create the specified amount pit instances and add them to the pit list
             for p in range(pitNum):
-                pitInstance = pit()
+                pitInstance = pit()  # create new bat instance
+
+                # make sure the wumpus is not on the same node as another object in the game(as the player)
                 while pitInstance.pos in filledNodes:
+                    # set the instances position to another random node
                     pitInstance.pos = getRandomNode()
-                pits.append(pitInstance)
+                pits.append(pitInstance)  # add the pit to the list of pits
+                # add the pit's position to the list of filled nodes
                 filledNodes.append(pitInstance.pos)
                 pitNodes.append(pitInstance.pos)
 
             print(f"{filledNodes = }")
             print(f"{wumpusInstance.pos = }")
 
-            print(f"{pitNodes = }")  # delete later
-            print(f"{batNodes = }")  # delete later
+            print(f"{pitNodes = }")
+            print(f"{batNodes = }")
 
-            wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [
-                                 wumpusInstance])  # calculate initial wumpus distance from spawn
-            pitDistance = min([findHazard(graph, currNode, pit.pos)
+            wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [  # min depth of all the possible paths to the wumpus to find the shortest distance
+                                 wumpusInstance])  # returns wumpus distance from spawn.
+            pitDistance = min([findHazard(graph, currNode, pit.pos)  # returns pit distance from spawn. (for all pits)
                               for pit in pits])
-            batDistance = min([findHazard(graph, currNode, bat.pos)
+            batDistance = min([findHazard(graph, currNode, bat.pos)  # returns bat distance from spawn. (for all pits)
                               for bat in bats])
 
-            colObj = playerInstance.detectHazardCollision(
+            colObj = playerInstance.detectHazardCollision(  # Check if the player is currently in the same node as a hazard
                 currNode, wumpusInstance, pits, bats)
             if colObj != "null":
-                raise Exception(f"{colObj = }")
+                # raise an exception since this shouldn't have happened, since the player shouldn't be in the same node as a hazard and show the object the player collided with.
+                # colObj is the object the player collided with
+                raise ValueError(f"{colObj = }")
 
-            charges = 5
+            charges = 5  # amount of charges that the player has (for the game)
+            # Set the variable to None so it can be used later to check if the player is charging.
+            # set the variable to None so it can be used later to check if the player is charging.
             isCharging = None
+            # Set the variable to None so it can be used later to check if the player is charging.
+            # set the variable to None so it can be used when the player has attempted a charge
             chargeRes = None
 
-            gameOver = False
-            endCause = ""
-            menuSound.play()  # play the sound
+            gameOver = False  # Set to false since the game hasn't ended
+            endCause = ""  # empty string to start with.
+            menuSound.play()  # play the main menu soundtrack
             # menuSound.play() # play the sound
 
+            # Reset the menu settings that may have been altered and ensure that the game doesn't keep re-running
             initGame = False
-
             menuPlay = False
             menuOpt = False
             menuQuit = False
-            # end
+            # end of main menu
 
-        # leftMouse, middleMouse, rightMouse = pygame.mouse.get_pressed()
-        # print(leftMouse, middleMouse, rightMouse)
-        if gameOver:
-            msg2 = "error"
+        if gameOver:  # when the game has ended
+            msg2 = "error"  # default message to display
             msg1 = "shoot"
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # close when x button hit
@@ -538,6 +562,8 @@ def main():
                     msg2 = "You fell into a pit and died"
                 elif endCause == "wumpus":
                     msg2 = "You accidentally stumbled upon an army of Philistines,\nand couldn't make it out"
+                else:
+                    raise ValueError(f"{endCause = }")
             msg3 = "Press any button to restart"
             text1 = arcadeFontMedium.render(msg1, True, (255, 255, 255))
             text2 = arcadeFontSmall.render(msg2, True, (255, 255, 255))

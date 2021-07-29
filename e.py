@@ -56,7 +56,6 @@
 # comb = permutations(all_nums, 3)
 
 
-
 # # print(sum(1 for _ in comb))
 
 
@@ -88,10 +87,9 @@
 
 # # print(dict)
 
-    
 
 # ####################
 
-from pixellator import Pixellate
+# from pixellator import Pixellate
 
-pixellatedImg = Pixellate("./img/bats.png", 100)
+# pixellatedImg = Pixellate("./img/bats.png", 100)
