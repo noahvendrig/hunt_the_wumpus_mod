@@ -7,6 +7,7 @@ __course__ = 'Software Design and Development'
 __date__ = '30/07/2021'
 __description__ = '\'Samson\' is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973)'
 __info__ = "info available at: noahvendrig.com/#about"  # some info available here
+__readme__ = "https://github.com/noahvendrig/hunt_the_wumpus_mod/blob/main/readme.md"
 __pyver__ = '3.8.10'
 __pygamever__ = '2.0.1'
 # ====================================== Imports ======================================
@@ -278,11 +279,14 @@ class TextObj():
         self.h = h
         self.name = name
         # self.posRect = pygame.Rect(self.x, self.y, self.w, self.h)
-    def draw(self, font, screen, fontColour=(255, 255, 255)):
+    def draw(self, font, screen, fontColour=(255, 255, 255), box=False):
         btnText = font.render(self.txt, True, fontColour)
         self.posRect = btnText.get_rect(topleft=(self.x, self.y))
         # posRect = pygame.draw.rect(screen, [0, 0, 0], [50, 50, 90, 180], 1)
         screen.blit(btnText, self.posRect)
+        if box:
+            # pygame.draw.rect(screen, (0,0,255),self.x, self.y, 100, 100, 1)
+            posRect = pygame.draw.rect(screen, [0, 0, 0], [self.x-17, self.y-5, 200,75], 3, 2)
 
     def Hover(self, mousePos):
         if self.posRect.collidepoint(mousePos):
@@ -390,7 +394,7 @@ class Rules():
         # bg = self.screen.fill((0,255,255))
         self.screen.blit(self.bg, (1, 1))
         h = 80
-        text = ["\'Samson\' is a game in which the player takes upon the form of an ancient hero named Samson.",
+        text = ["\'Samson\' is a game in which the player controls an ancient hero named Samson.",
         "He is stuck in a cave, and must eliminate a massive army of Philistines before they make advancements towards the territory of his people",
         "He must navigate throughout a complex cave network of 20 caves, filled with dangerous creatures such as lions and bats whilst also attempting to find the army",
          "If Samson wonders into a cave filled with bats then he is dazed and walks far into a random cave in the network.",
@@ -399,12 +403,12 @@ class Rules():
           "Using his keen senses and clever mind, if he charges into a cave full of Philistines then his mighty power will be unleashed, and they will all be slain",
           "This means that his people are saved and he may exit the cave."]
         for str in text:
-            if len(str) > 100:
+            if len(str) > 91:
                 h += 70
-                slice1 = str[0:99]
-                slice2 = str[99:] # not expecting more than 200 characters in a string
+                slice1 = str[0:90]
+                slice2 = str[90:] # not expecting more than 200 characters in a string
                 textObj1 = TextObj("text", 20, h, slice1)
-                h+=60
+                h+=40
                 textObj2 = TextObj("text", 20, h, slice2)
                 textObj1.draw(self.extraSmallFont, self.screen,white)
                 textObj2.draw(self.extraSmallFont, self.screen, white)
@@ -415,7 +419,7 @@ class Rules():
 
         title = self.font.render("How the Game Works", True, white) #title text
 
-        self.screen.blit(title, (250,90)) #draw title
+        self.screen.blit(title, (100,50)) #draw title
 def main():
 
     graph = {
@@ -539,7 +543,7 @@ def main():
     controlsBtn = TextObj("ctrl", w/14, (h/4)+320, "Controls", w, h)
     quitBtn = TextObj("quit", w/14, (h/4)+410, "Quit", w, h)
 
-    backBtn = TextObj("back", (w/2)-50, h-150, "Back", w, h)
+    backBtn = TextObj("back", (w/2)-50, h-100, "Back", w, h)
 
     versionText = TextObj('version', 92*w/100, h-50, str(__version__), w, h)
     # A list with all the menu selections
@@ -747,7 +751,6 @@ def main():
                 if event.type == pygame.QUIT:  # close when x button hit
                     running = False
                     pygame.quit()
-
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     try:
                         if backBtn.Hover(mousePos):
@@ -826,23 +829,24 @@ def main():
             elif menuRules:
                 rulesOpen = True
                 rulesScreen.Show()
-                backBtn.draw(arcadeFont60, screen, (0,0,0))
+                backBtn.draw(arcadeFont60, screen, (0,0,0), True)
 
             elif menuControls:
                 controlsOpen = True
                 controlsScreen.Show()
-                backBtn.draw(arcadeFont60, screen, (0,0,0)) 
+                backBtn.draw(arcadeFont60, screen, (0,0,0), True) 
 
             elif menuLeaderboard:
                 leaderboardOpen = True
                 leaderboard.Show()
-                backBtn.draw(arcadeFont60, screen, (0,0,0))
+                backBtn.draw(arcadeFont60, screen, (0,0,0), True)
 
             elif menuQuit:
                 running = False
                 pygame.quit()
-        
 
+        
+            
 
 ################################################################## GAME ACTIVE
         elif gameActive:
@@ -989,5 +993,6 @@ if __name__ == "__main__":
     print("\n")
     print("Python " + __pyver__)
     print("Pygame " + __pygamever__)
+    print("VIEW THE README AT "+__readme__)
     print('# ' + '=' * 78)
     main()

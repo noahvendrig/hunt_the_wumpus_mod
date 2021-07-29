@@ -1,6 +1,6 @@
 __author__ = 'Noah Vendrig'
 __license__ = 'MIT'  # copy of the license available @ https://prodicus.mit-license.org/
-__version__ = '2.5'
+__version__ = '3.4'
 __email__ = 'noah.vendrig@education.nsw.gov.au'
 __github__ = "github.com/noahvendrig"  # @noahvendrig
 __course__ = 'Software Design and Development'
@@ -41,7 +41,7 @@ class wumpus(hazard):
 class Lion(hazard):
     def __init__(self):
         hazard.__init__(self)
-        self.type = ""
+        self.type = "lion"
 
 
 class bat(hazard):
@@ -195,7 +195,7 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance, ch
             if key == "lionDistance":
                 # print(f"{key} = {hazardDistance[key]}")
                 distanceTxt = font.render(
-                    "THERE IS A LION NEARBY",
+                    "You can hear soft purrs nearby... It might be a lion",
                     True,
                     fontColour,  # finds integers in the string e.g. "19" in "n19" to display
                 )
@@ -277,12 +277,15 @@ class TextObj():
         self.w = w
         self.h = h
         self.name = name
-
-    def draw(self, font, screen, fontColour=(255, 255, 255)):
+        # self.posRect = pygame.Rect(self.x, self.y, self.w, self.h)
+    def draw(self, font, screen, fontColour=(255, 255, 255), box=False):
         btnText = font.render(self.txt, True, fontColour)
         self.posRect = btnText.get_rect(topleft=(self.x, self.y))
         # posRect = pygame.draw.rect(screen, [0, 0, 0], [50, 50, 90, 180], 1)
         screen.blit(btnText, self.posRect)
+        if box:
+            # pygame.draw.rect(screen, (0,0,255),self.x, self.y, 100, 100, 1)
+            posRect = pygame.draw.rect(screen, [0, 0, 0], [self.x-17, self.y-5, 200,75], 3, 2)
 
     def Hover(self, mousePos):
         if self.posRect.collidepoint(mousePos):
@@ -305,65 +308,120 @@ def Charge(direction, playerPos, charges, wumpusPos, graph):
         return False
 
 class Leaderboard(): # Class for the leaderboard
-    def __init__(self, screen, regularFont, smallFont):
+    def __init__(self, screen, regularFont, smallFont, bg):
         self.font = regularFont
         self.smallFont = smallFont #using two different fonts so this is the smaller one
-        self.scores = [] # scores starts as an empty list
+        self.scores = [6400, 540, 2000, 5000, 10000, 3400] # scores starts as an empty list
         self.screen = screen
-        self.maxScores = 7 # only 7 scores max allowed on the screen
-        
+        self.maxScores = 8 # only top 8 scores displayed on the screen
+        self.bg = bg
+        self.reducedScores = [] # reducedScores is a list of the scores that are displayed on the screen
     def AddResult(self, result):
         self.scores.append(result)
 
     def Show(self):
-        bg = self.screen.fill((255,255,255))
+        # bg = self.screen.fill((255,255,255))
+        white = (255,255,255)
+        self.screen.blit(self.bg, (1, 1))
         numTexts = []
         scoreTexts = []
         if self.scores == []:
-            self.screen.blit(self.smallFont.render("Win a game to add a score to the leaderboard!", True, (0,0,0)), (100,300))
+            self.screen.blit(self.smallFont.render("Win a game to add a score to the leaderboard!", True, white), (250,250))
         else:
+            
             self.scores.sort(reverse=True) # sort the list in descending order so the highest score is displayed first
-            for i in range(len(self.scores)):#range(self.maxScores):
-                numTextInstance  = TextObj("numText", 150, 80*i+150, str(i+1))
-                scoreTextInstance = TextObj("scoreText", 250, 80*i+150, str(int(self.scores[i])))
+            if len(self.scores) > self.maxScores:
+                self.reducedScores = self.scores[:self.maxScores]
+            else:
+                self.reducedScores = self.scores
+            for i in range(len(self.reducedScores)):#range(self.maxScores):
+                numTextInstance  = TextObj("numText", 250, 100*i+250, str(i+1))
+                scoreTextInstance = TextObj("scoreText", 400, 100*i+250, str(int(self.reducedScores[i])))
                 numTexts.append(numTextInstance)
                 scoreTexts.append(scoreTextInstance)
 
                 num = numTexts[i]
                 score = scoreTexts[i]
-                num.draw(self.font, self.screen, (0,0,0))
-                score.draw(self.font, self.screen, (0,0,0))
+                num.draw(self.font, self.screen, white)
+                score.draw(self.font, self.screen, white)
         
         # print(f"{len(self.scores)}, {self.scores =}")
-
         
-        title = self.font.render("Leaderboard", True, (0,0,0)) #title text
-        
-        # numText = self.font.render(str(self.scores[0]), True, (0,0,0))
-        # self.posRect = numText.get_rect(topleft=(100, 100))
+        title = self.font.render("Leaderboard", True, white) #title text
 
-        self.screen.blit(title, (100,100))
-        # self.screen.blit(numText, (100,200))
-        # rect =  pygame.draw.rect(self.screen,(0,0,0),(200,150,100,50))
+        self.screen.blit(title, (250,90)) #draw title
 
 
 class Controls():
-    def __init__(self, screen, regularFont, smallFont):
+    def __init__(self, screen, regularFont, smallFont, bg):
         self.screen = screen
         self.font = regularFont
         self.smallFont = smallFont
+        self.bg = bg
     def Show(self):
-        bg = self.screen.fill((0,255,255))
-        arrows = TextObj("arrows", 150, 500, "← ↑ → ↓")
-        arrows.draw(self.font, self.screen)
+        # bg = self.screen.fill((0,255,255))
+        self.screen.blit(self.bg, (1, 1))
+        h = 150
+        white = (255,255,255)
+        text = ["Use the arrow keys  ← ↑ → to navigate across the cave system",
+         "Charge into an adjacent cave by pressing left-shift then the corresponding arrow key ← ↑ →",
+        "Exit the game using esc, closing the window or \'Quit\' if in the menu.",
+        "Navigate the menu using the arrow keys ↑ ↓ or the cursor to change the selection, and spacebar or clicking the button to advance", "Hit Enter to go back to the main menu"]
+        for str in text:
+            if len(str) > 80:
+                h += 100
+                slice1 = str[0:74]
+                slice2 = str[74:] # not expecting more than 150 characters in a string
+                textObj1 = TextObj("text", 50, h, slice1)
+                h+=60
+                textObj2 = TextObj("text", 50, h, slice2)
+                textObj1.draw(self.smallFont, self.screen, (white))
+                textObj2.draw(self.smallFont, self.screen, (white))
+            else:
+                h += 100
+                textObj = TextObj("text", 50, h, str)
+                textObj.draw(self.smallFont, self.screen, (255,255,255))
+            title = self.font.render("Controls", True, white) #title text
+
+            self.screen.blit(title, (250,90)) #draw title
 
 class Rules():
-    def __init__(self, screen):
+    def __init__(self, screen, regularFont, extraSmallFont, bg):
         self.screen = screen
-
+        self.font = regularFont
+        self.extraSmallFont = extraSmallFont
+        self.bg = bg
     def Show(self):
-        self.screen.fill((255,0,255))
+        white = (255,255,255)
+        # bg = self.screen.fill((0,255,255))
+        self.screen.blit(self.bg, (1, 1))
+        h = 80
+        text = ["\'Samson\' is a game in which the player controls an ancient hero named Samson.",
+        "He is stuck in a cave, and must eliminate a massive army of Philistines before they make advancements towards the territory of his people",
+        "He must navigate throughout a complex cave network of 20 caves, filled with dangerous creatures such as lions and bats whilst also attempting to find the army",
+         "If Samson wonders into a cave filled with bats then he is dazed and walks far into a random cave in the network.",
+         "If he stumbles upon a mighty lion, he will be unable to defend himself and will suffer mortal wounds.",
+          "If Samson walks into a cave full of Philistines, then he will be killed immediately however there is a way he can defeat them.",
+          "Using his keen senses and clever mind, if he charges into a cave full of Philistines then his mighty power will be unleashed, and they will all be slain",
+          "This means that his people are saved and he may exit the cave."]
+        for str in text:
+            if len(str) > 91:
+                h += 70
+                slice1 = str[0:90]
+                slice2 = str[90:] # not expecting more than 200 characters in a string
+                textObj1 = TextObj("text", 20, h, slice1)
+                h+=40
+                textObj2 = TextObj("text", 20, h, slice2)
+                textObj1.draw(self.extraSmallFont, self.screen,white)
+                textObj2.draw(self.extraSmallFont, self.screen, white)
+            else:
+                h += 70
+                textObj = TextObj("text", 50, h, str)
+                textObj.draw(self.extraSmallFont, self.screen, white)
 
+        title = self.font.render("How the Game Works", True, white) #title text
+
+        self.screen.blit(title, (100,50)) #draw title
 def main():
 
     graph = {
@@ -405,6 +463,7 @@ def main():
     #     enablePrint()
     # else:
     #     blockPrint()
+
     # lionSound = pygame.mixer.music("./audio/lion.mp3")
     menuSound = pygame.mixer.Sound("./audio/menu.mp3")
     victorySound = pygame.mixer.Sound("./audio/victory.mp3")
@@ -434,7 +493,7 @@ def main():
     pygame.display.set_caption("Samson")
     # Set the resolution of the screen
     screen = pygame.display.set_mode((w, h))
-    fontColour = (0, 0, 0)  # default font colour I'm using is white
+    fontColour = (255, 255, 255)  # default font colour I'm using is white
 
     # font = ("./arial.tff", 32)
     # use the free sans bold font
@@ -445,6 +504,7 @@ def main():
     arcadeFont60 = pygame.font.Font("font/arcade.ttf", (int((w+h)/60)))
     # also use an arcade style font (small size)
     arcadeFontSmall = pygame.font.Font("font/arcade.ttf", (int((w+h)/100)))
+    arcadeFontExtraSmall = pygame.font.Font("font/arcade.ttf", (int((w+h)/120)))
     # currNode = "n1"  # set the starting node
     # settings: ##########################################################
     # set frames per second of the game (not really important since there aren't any animations however it is needed for the game clock)
@@ -457,9 +517,12 @@ def main():
 
     menuBg = pygame.image.load("./img/menu_bg.png")
     menuBg = pygame.transform.scale(menuBg, (w, h))
-
+    lionImg = pygame.image.load("./img/lion.png")
+    # lionImg = = pygame.transform.scale(menuBg, (w, h))
     batImg = pygame.image.load("./img/bats.png")
     batImg = pygame.transform.scale(batImg, (500, 500))
+    gradientBg = pygame.image.load("./img/gradient_bg.jpg")
+    gradientBg = pygame.transform.scale(gradientBg, (w, h))
 
     clock = pygame.time.Clock()  # create game clock
 
@@ -482,7 +545,7 @@ def main():
     controlsBtn = TextObj("ctrl", w/14, (h/4)+320, "Controls", w, h)
     quitBtn = TextObj("quit", w/14, (h/4)+410, "Quit", w, h)
 
-    backBtn = TextObj("back", (w/2)-50, h-150, "Back", w, h)
+    backBtn = TextObj("back", (w/2)-50, h-100, "Back", w, h)
 
     versionText = TextObj('version', 92*w/100, h-50, str(__version__), w, h)
     # A list with all the menu selections
@@ -491,9 +554,10 @@ def main():
 
     currMenuSelection = playBtn
     initGame = True
-    leaderboard = Leaderboard(screen, arcadeFontMedium, arcadeFontSmall)
-    controlsScreen = Controls(screen, arcadeFontMedium, arcadeFontSmall)
-    rulesScreen = Rules(screen)
+    
+    leaderboard = Leaderboard(screen, arcadeFontMedium, arcadeFontSmall, gradientBg)
+    controlsScreen = Controls(screen, arcadeFontMedium, arcadeFontSmall, gradientBg)
+    rulesScreen = Rules(screen, arcadeFontMedium, arcadeFontExtraSmall, gradientBg)
 
 ####################################################################################
     while running:  # while the game is running,
@@ -529,7 +593,7 @@ def main():
             # for w in range(wumpusNum):
             #     wumpusInstance = wumpus()
             #     wumpusNodes.append(wumpusInstance.pos)
-            # used for testing to keep track of the locations of the lions (for debugging)
+            # used for testing to keep track of the locations of the bats (for debugging)
             batNodes = []
             # used for testing to keep track of the locations of the lions (for debugging)
             lionNodes = []
@@ -642,6 +706,7 @@ def main():
 
                 elif endCause == "lion":
                     msg2 = "A Mystical lion appeared out of nowhere and killed you"
+                    screen.blit(lionImg, (1,1))
                 elif endCause == "wumpus":
                     msg2 = "You accidentally stumbled upon an army of Philistines! You died!"
                 else:
@@ -688,15 +753,24 @@ def main():
                 if event.type == pygame.QUIT:  # close when x button hit
                     running = False
                     pygame.quit()
-
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    try:
+                        if backBtn.Hover(mousePos):
+                            menuRules = False
+                            menuControls = False
+                            menuLeaderboard = False
+                    except:
+                        pass # means that the back button isn't active yet
+                        
                     for btn in menuSelections:
                         if btn.Hover(mousePos):
                             if btn.name == "play":
                                 menuPlay = True
                             elif btn.name == "rules":
                                 menuRules = True
-                            elif btn.name == "controls":
+                            elif btn.name == "leaderboard":
+                                menuLeaderboard = True
+                            elif btn.name == "ctrl":
                                 menuControls = True
                             elif btn.name == "quit":
                                 menuQuit = True
@@ -743,11 +817,11 @@ def main():
 
                         elif controlsOpen: # draw over main menu
                             menuControls = False
-                            leaderboardOpen = False
+                            controlsOpen = False
 
                         elif rulesOpen: # draw over main menu
                             menuRules = False
-                            leaderboardOpen = False
+                            rulesOpen = False
             if menuPlay:
                 pygame.mixer.pause()
                 mainMenuActive = False
@@ -757,22 +831,24 @@ def main():
             elif menuRules:
                 rulesOpen = True
                 rulesScreen.Show()
-                backBtn.draw(arcadeFont60, screen, (0,0,0))
+                backBtn.draw(arcadeFont60, screen, (0,0,0), True)
 
             elif menuControls:
                 controlsOpen = True
                 controlsScreen.Show()
-                backBtn.draw(arcadeFont60, screen, (0,0,0)) 
+                backBtn.draw(arcadeFont60, screen, (0,0,0), True) 
 
             elif menuLeaderboard:
                 leaderboardOpen = True
                 leaderboard.Show()
-                backBtn.draw(arcadeFont60, screen, (0,0,0))
+                backBtn.draw(arcadeFont60, screen, (0,0,0), True)
 
             elif menuQuit:
                 running = False
                 pygame.quit()
 
+        
+            
 
 ################################################################## GAME ACTIVE
         elif gameActive:
@@ -858,10 +934,12 @@ def main():
                             gameActive = False
                             gameOver = True
                     else:
+                        
                         colObj = playerInstance.detectHazardCollision(
                             currNode, wumpusInstance, lions, bats)
 
                     if colObj != "null":
+
                         startTime = time.time()
                         if colObj.type == "wumpus":
                             endCause = "wumpus"
@@ -870,13 +948,11 @@ def main():
                             gameOver = True
 
                         elif colObj.type == "lion":
+                            
                             print(f"just hit a LION at {colObj.pos}")
                             endCause = "lion"
                             gameActive = False
                             gameOver = True
-                            # initGame = True
-                            # mainMenuActive = True
-                            # gameActive = False
 
                         elif colObj.type == "bat":
                             print(f"just hit a BAT at {colObj.pos}")
@@ -885,10 +961,6 @@ def main():
                                 currNode = getRandomNode()
                             # batTextTime = time.time()
                             showBatMoveText = True
-
-            # if showlionDeathText:
-            #     showTimedText(400, 300, 10, "just hit a lion oof",
-            #                   fontColour, font, screen, startTime)
 
             if showBatMoveText:
                 pass
