@@ -499,6 +499,7 @@ def main():
         # leftMouse, middleMouse, rightMouse = pygame.mouse.get_pressed()
         # print(leftMouse, middleMouse, rightMouse)
         if gameOver:
+            
             msg2="error"
             msg1="shoot"
             for event in pygame.event.get():
@@ -522,7 +523,7 @@ def main():
                 msg1 = "Game Over!"
                 
                 if endCause == "charge":
-                    msg2 = "You ran out of charges"
+                    msg2 = "You ran out of charges!"
 
                 elif endCause == "pit":
                     msg2 = "You fell into a pit and died"

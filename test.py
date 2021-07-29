@@ -6,7 +6,7 @@ __github__ = "github.com/noahvendrig"  # @noahvendrig
 __course__ = 'Software Design and Development'
 __date__ = '30/07/2021'
 __description__ = '\'Samson\' is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973)'
-__specifications__ = "noahvendrig.com/#about"  # specifications available here
+__info__ = "info available at: noahvendrig.com/#about"  # some info available here
 __pyver__ = '3.8.10'
 __pygamever__ = '2.0.1'
 # ====================================== Imports ======================================
@@ -38,10 +38,10 @@ class wumpus(hazard):
         self.type = "wumpus"
 
 
-class pit(hazard):
+class Lion(hazard):
     def __init__(self):
         hazard.__init__(self)
-        self.type = "pit"
+        self.type = ""
 
 
 class bat(hazard):
@@ -55,13 +55,13 @@ class player:
         self.type = "player"
         self.pos = getRandomNode()
 
-    def detectHazardCollision(self, playerPos, wumpusInstance, pits, bats):
+    def detectHazardCollision(self, playerPos, wumpusInstance, lions, bats):
         if playerPos in [wumpusInstance.pos]:
             return wumpusInstance
 
-        for pit in pits:
-            if playerPos == pit.pos:
-                return pit
+        for lion in lions:
+            if playerPos == lion.pos:
+                return lion
 
         for bat in bats:
             if playerPos == bat.pos:
@@ -122,17 +122,17 @@ def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
         # pygame.display.update()
 
 
-def validInputReceived(graph, currNode, keyNum, wumpusInstance, pits, bats, playerInstance):
+def validInputReceived(graph, currNode, keyNum, wumpusInstance, lions, bats, playerInstance):
 
     currNode = changeNode(graph, currNode, keyNum)
     wumpusDist = min(findHazard(graph, currNode, wump.pos)
                      for wump in [wumpusInstance])  # change to wumpus list
     # wumpusDist = findHazard(graph, currNode, wumpusInstance.pos)
-    pitDist = min([findHazard(graph, currNode, pit.pos) for pit in pits])
+    lionDist = min([findHazard(graph, currNode, lion.pos) for lion in lions])
     batDist = min([findHazard(graph, currNode, bat.pos) for bat in bats])
-    # print(f"{pitDist = }")
+    # print(f"{lionDist = }")
     # print(f"{batDist = }")
-    return currNode, wumpusDist, pitDist, batDist
+    return currNode, wumpusDist, lionDist, batDist
 
 
 def findHazard(graph, playerPos, hazardPos):
@@ -189,31 +189,31 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance, ch
                 # )
 
                 # draw on screen
-                screen.blit(distanceTxt, (x_distTxt, displayAdjustment))
+                screen.blit(distanceTxt, (x_distTxt, 800))
                 displayAdjustment += 125
 
-            elif key == "pitDistance":
+            if key == "lionDistance":
                 # print(f"{key} = {hazardDistance[key]}")
                 distanceTxt = font.render(
-                    "THERE IS A PIT NEARBY",
+                    "THERE IS A LION NEARBY",
                     True,
                     fontColour,  # finds integers in the string e.g. "19" in "n19" to display
                 )
 
                 # draw on screen
-                screen.blit(distanceTxt, (x_distTxt, displayAdjustment))
+                screen.blit(distanceTxt, (x_distTxt, 850))
                 displayAdjustment += 125
 
-            elif key == "batDistance":
+            if key == "batDistance":
                 # print(f"{key} = {hazardDistance[key]}")
-                distanceTxt = font.render(  # "Soft purrs can be heard from a nearby cave..."
+                distanceTxt = font.render(  
                     "You can hear bats nearby",
                     True,
                     fontColour,  # finds integers in the string e.g. "19" in "n19" to display
                 )
 
                 # draw on screen
-                screen.blit(distanceTxt, (x_distTxt, displayAdjustment))
+                screen.blit(distanceTxt, (x_distTxt, 900))
                 displayAdjustment += 125
 
     currRoom_Txt = font.render(  # render the text that displays the current room the player is in
@@ -257,11 +257,11 @@ def getRandomNode():
     return node
 
 
-def pitDeath(fontColour, font, screen):
-    # deathTxt = font.render("YOU FELL INTO A PIT",True,fontColour)
-    # screen.blit(deathTxt, (200, 350))  # draw on screen
-    showTimedText(300, 400, 5, "YOU FELL INTO A PIT LO IT WORKS",
-                  fontColour, font, screen)
+# def lionDeath(fontColour, font, screen):
+#     # deathTxt = font.render("YOU FELL INTO A lion",True,fontColour)
+#     # screen.blit(deathTxt, (200, 350))  # draw on screen
+#     showTimedText(300, 400, 5, "YOU FELL INTO A lion LO IT WORKS",
+#                   fontColour, font, screen)
 
 
 def showBat(screen, batImg):
@@ -270,7 +270,7 @@ def showBat(screen, batImg):
 
 
 class TextObj():
-    def __init__(self, name, x, y, txt, w, h):
+    def __init__(self, name, x, y, txt, w=1920, h=1080):
         self.x = x
         self.y = y
         self.txt = txt
@@ -304,6 +304,65 @@ def Charge(direction, playerPos, charges, wumpusPos, graph):
     else:
         return False
 
+class Leaderboard(): # Class for the leaderboard
+    def __init__(self, screen, regularFont, smallFont):
+        self.font = regularFont
+        self.smallFont = smallFont #using two different fonts so this is the smaller one
+        self.scores = [10,12,3,8,5,6,7,8] # scores starts as an empty list
+        self.screen = screen
+        self.maxScores = 7 # only 7 scores max allowed on the screen
+        
+    def AddResult(self, result):
+        self.scores.append(result)
+
+    def Show(self):
+        bg = self.screen.fill((255,255,255))
+        numTexts = []
+        scoreTexts = []
+        if self.scores == []:
+            self.screen.blit(self.smallFont.render("Win a game to add a score to the leaderboard!", True, (0,0,0)), (100,300))
+        else:
+            self.scores.sort(reverse=True) # sort the list in descending order so the highest score is displayed first
+            for i in range(len(self.scores)):#range(self.maxScores):
+                numTextInstance  = TextObj("numText", 150, 80*i+150, str(i+1))
+                scoreTextInstance = TextObj("scoreText", 250, 80*i+150, str(int(self.scores[i])))
+                numTexts.append(numTextInstance)
+                scoreTexts.append(scoreTextInstance)
+
+                num = numTexts[i]
+                score = scoreTexts[i]
+                num.draw(self.font, self.screen, (0,0,0))
+                score.draw(self.font, self.screen, (0,0,0))
+        
+        # print(f"{len(self.scores)}, {self.scores =}")
+
+        
+        title = self.font.render("Leaderboard", True, (0,0,0)) #title text
+        
+        # numText = self.font.render(str(self.scores[0]), True, (0,0,0))
+        # self.posRect = numText.get_rect(topleft=(100, 100))
+
+        self.screen.blit(title, (100,100))
+        # self.screen.blit(numText, (100,200))
+        # rect =  pygame.draw.rect(self.screen,(0,0,0),(200,150,100,50))
+
+
+class Controls():
+    def __init__(self, screen, regularFont, smallFont):
+        self.screen = screen
+        self.font = regularFont
+        self.smallFont = smallFont
+    def Show(self):
+        bg = self.screen.fill((0,255,255))
+        arrows = TextObj("arrows", 150, 500, "← ↑ → ↓")
+        arrows.draw(self.font, self.screen)
+
+class Rules():
+    def __init__(self, screen):
+        self.screen = screen
+
+    def Show(self):
+        self.screen.fill((255,0,255))
 
 def main():
 
@@ -333,6 +392,8 @@ def main():
     pygame.init()
     pygame.mixer.init()
 
+    
+
     # devMode = False
     # devInput = input("enable dev mode? (Y/N) ")
     # if devInput.lower == "Y":
@@ -347,12 +408,12 @@ def main():
 
     batSound = pygame.mixer.Sound("./audio/bat.mp3")
     wumpusSound = pygame.mixer.Sound("./audio/wumpus.mp3")
-    # pitSound = pygame.mixer.music("./audio/pit.mp3")
-    pitSound = pygame.mixer.Sound("./audio/w.wav")
+    # lionSound = pygame.mixer.music("./audio/lion.mp3")
     menuSound = pygame.mixer.Sound("./audio/menu.mp3")
+    victorySound = pygame.mixer.Sound("./audio/victory.mp3")
     # allow for multiple channle use, so that sounds can be played over each other
     pygame.mixer.set_num_channels(5)
-    # pitSound.play()
+    # lionSound.play()
     # wumpusSound.play()
 
     # arialFont = pygame.font.SysFont("Arial", 30)
@@ -383,7 +444,8 @@ def main():
     font = pygame.font.Font("freesansbold.ttf", 32)
 
     # also use an arcade style font (medium size)
-    arcadeFontMedium = pygame.font.Font("font/arcade.ttf", (int((w+h)/45)))
+    arcadeFontMedium = pygame.font.Font("font/arcade.ttf", (int((w+h)/45))) #45
+    arcadeFont60 = pygame.font.Font("font/arcade.ttf", (int((w+h)/60)))
     # also use an arcade style font (small size)
     arcadeFontSmall = pygame.font.Font("font/arcade.ttf", (int((w+h)/100)))
     # currNode = "n1"  # set the starting node
@@ -412,32 +474,40 @@ def main():
     mainMenuActive = True
     gameActive = False
 
-    showPitDeathText = False
+    showLionDeathText = False
     showBatMoveText = False
     # Text needed for the main menu
     # Create instances of a TextObj which is used to display text on the screen (in this case the buttons and title text)
     titleText = TextObj("title", w/14, (h/4)-20, "SAMSON", w, h)
     playBtn = TextObj("play", w/14, (h/4)+62, "Play", w, h)
-    optBtn = TextObj("opt", w/14, (h/4)+152, "Options", w, h)
+    rulesBtn = TextObj("rules", w/14, (h/4)+140, "Rules", w, h)
+    leaderboardBtn = TextObj("leaderboard",w/14, (h/4)+230, "Leaderboard", w,h)
+    controlsBtn = TextObj("ctrl", w/14, (h/4)+320, "Controls", w, h)
+    quitBtn = TextObj("quit", w/14, (h/4)+410, "Quit", w, h)
 
-    # leaderboardBtn = TextObj("leaderboard",w/14, (h/4)+242, "Leaderboard", w,h)
-    quitBtn = TextObj("quit", w/14, (h/4)+242, "Quit", w, h)  # 322
+    backBtn = TextObj("back", (w/2)-50, h-150, "Back", w, h)
 
     versionText = TextObj('version', 92*w/100, h-50, str(__version__), w, h)
     # A list with all the menu selections
-    menuSelections = [playBtn, optBtn, quitBtn]
-    # menuSelections = [playBtn, optBtn, leaderboardBtn, quitBtn]
+    # menuSelections = [playBtn, rulesBtn, quitBtn]
+    menuSelections = [playBtn, rulesBtn, leaderboardBtn, controlsBtn, quitBtn]
 
     currMenuSelection = playBtn
     initGame = True
+    leaderboard = Leaderboard(screen, arcadeFontMedium, arcadeFontSmall)
+    controlsScreen = Controls(screen, arcadeFontMedium, arcadeFontSmall)
+    rulesScreen = Rules(screen)
+
 ####################################################################################
     while running:  # while the game is running,
 
         if initGame:  # we need to initialise the game when we first start it up or restart. This just runs in the background while the menu is open so the game is already created when the user clicks play
             print("---------------------------GAME STARTED-----------------------------")
+            score = 0
+            turns = 0
             batsNum = 2  # number of bats to be generated
-            pitNum = 2  # number of pits to be generated
-
+            lionNum = 2  # number of lions to be generated
+            resultAdded = False
             # list of nodes in the graph that are occupied (by either player or hazards)
             filledNodes = []
             playerInstance = player()  # create an instance of the player class
@@ -454,17 +524,18 @@ def main():
             currNode = playerInstance.pos
             # print(f"initial {currNode = }")
             bats = []  # empty list fo
-            pits = []
+            lions = []
             # wumpusNum = 1
             # wumpusNodes = []
+            playVictoryMusic = True
 
             # for w in range(wumpusNum):
             #     wumpusInstance = wumpus()
             #     wumpusNodes.append(wumpusInstance.pos)
-            # used for testing to keep track of the locations of the pits (for debugging)
+            # used for testing to keep track of the locations of the lions (for debugging)
             batNodes = []
-            # used for testing to keep track of the locations of the pits (for debugging)
-            pitNodes = []
+            # used for testing to keep track of the locations of the lions (for debugging)
+            lionNodes = []
 
             # create the specified amount bat instances and add them to the bat list
             for b in range(batsNum):
@@ -479,34 +550,34 @@ def main():
                 filledNodes.append(batInstance.pos)
                 batNodes.append(batInstance.pos)
 
-            # create the specified amount pit instances and add them to the pit list
-            for p in range(pitNum):
-                pitInstance = pit()  # create new bat instance
+            # create the specified amount lion instances and add them to the lion list
+            for p in range(lionNum):
+                lionInstance = Lion()  # create new bat instance
 
                 # make sure the wumpus is not on the same node as another object in the game(as the player)
-                while pitInstance.pos in filledNodes:
+                while lionInstance.pos in filledNodes:
                     # set the instances position to another random node
-                    pitInstance.pos = getRandomNode()
-                pits.append(pitInstance)  # add the pit to the list of pits
-                # add the pit's position to the list of filled nodes
-                filledNodes.append(pitInstance.pos)
-                pitNodes.append(pitInstance.pos)
+                    lionInstance.pos = getRandomNode()
+                lions.append(lionInstance)  # add the lion to the list of lions
+                # add the lion's position to the list of filled nodes
+                filledNodes.append(lionInstance.pos)
+                lionNodes.append(lionInstance.pos)
 
             print(f"{filledNodes = }")
             print(f"{wumpusInstance.pos = }")
 
-            print(f"{pitNodes = }")
+            print(f"{lionNodes = }")
             print(f"{batNodes = }")
 
             wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [  # min depth of all the possible paths to the wumpus to find the shortest distance
                                  wumpusInstance])  # returns wumpus distance from spawn.
-            pitDistance = min([findHazard(graph, currNode, pit.pos)  # returns pit distance from spawn. (for all pits)
-                              for pit in pits])
-            batDistance = min([findHazard(graph, currNode, bat.pos)  # returns bat distance from spawn. (for all pits)
+            lionDistance = min([findHazard(graph, currNode, lion.pos)  # returns lion distance from spawn. (for all lions)
+                              for lion in lions])
+            batDistance = min([findHazard(graph, currNode, bat.pos)  # returns bat distance from spawn. (for all lions)
                               for bat in bats])
 
             colObj = playerInstance.detectHazardCollision(  # Check if the player is currently in the same node as a hazard
-                currNode, wumpusInstance, pits, bats)
+                currNode, wumpusInstance, lions, bats)
             if colObj != "null":
                 # raise an exception since this shouldn't have happened, since the player shouldn't be in the same node as a hazard and show the object the player collided with.
                 # colObj is the object the player collided with
@@ -528,11 +599,20 @@ def main():
             # Reset the menu settings that may have been altered and ensure that the game doesn't keep re-running
             initGame = False
             menuPlay = False
-            menuOpt = False
+            menuRules = False
+            menuControls = False
+            menuLeaderboard = False
             menuQuit = False
             # end of main menu
+            leaderboardOpen = False
+            controlsOpen = False
+            rulesOpen = False
 
         if gameOver:  # when the game has ended
+            score = (1/turns)*10000 # calculate the score by doing inverse of the amt of turns taken to defeat wumpus (so that less turns = higher scores then multiply by 10000 to get a bigger number
+            if resultAdded == False:
+                leaderboard.AddResult(score)  # add the score to the leaderboard
+                resultAdded = True
             msg2 = "error"  # default message to display
             msg1 = "shoot"
             for event in pygame.event.get():
@@ -541,27 +621,32 @@ def main():
                     pygame.quit()
 
                 if event.type == pygame.KEYDOWN:
+                    pygame.mixer.pause()
                     if event.key == pygame.K_ESCAPE:
                         running = False
                         pygame.quit()
                     else:
+                        # pygame.mixer.pause()
                         initGame = True
                         mainMenuActive = True
                         gameOver = False
                         gameActive = False
             if endCause == "slayed":
                 msg1 = "Congratulations!"
-                msg2 = "You have won the game!"
+                msg2 = f"You have won the game with a score of {int(score)}!"
+                if playVictoryMusic:
+                    victorySound.play()
+                    playVictoryMusic = False
             else:
                 msg1 = "Game Over!"
 
                 if endCause == "charge":
                     msg2 = "You ran out of charges"
 
-                elif endCause == "pit":
-                    msg2 = "You fell into a pit and died"
+                elif endCause == "lion":
+                    msg2 = "A Mystical lion appeared out of nowhere and killed you"
                 elif endCause == "wumpus":
-                    msg2 = "You accidentally stumbled upon an army of Philistines,\nand couldn't make it out"
+                    msg2 = "You accidentally stumbled upon an army of Philistines! You died!"
                 else:
                     raise ValueError(f"{endCause = }")
             msg3 = "Press any button to restart"
@@ -577,21 +662,24 @@ def main():
             # mainMenuActive = True
 
         if mainMenuActive:
-            pygame.mixer.unpause()
-            screen.blit(menuBg, (1, 1))
+              
+            pygame.mixer.unpause() #unpause the mixer so music starts playing again
+            screen.blit(menuBg, (1, 1)) # blit the menu BG image to the screen first (so FG gets drawn over it)
 
-            titleText.draw(arcadeFontMedium, screen, (0, 0, 0))
-            playBtn.draw(arcadeFontMedium, screen)
-            optBtn.draw(arcadeFontMedium, screen)
-            quitBtn.draw(arcadeFontMedium, screen)
+            titleText.draw(arcadeFont60, screen, (0, 0, 0))
+            playBtn.draw(arcadeFont60, screen)
+            rulesBtn.draw(arcadeFont60, screen)
+            leaderboardBtn.draw(arcadeFont60, screen)
+            controlsBtn.draw(arcadeFont60, screen)
+            quitBtn.draw(arcadeFont60, screen)
             # leaderboardBtn.draw(arcadeFontMedium, screen)
 
             versionText.draw(arcadeFontSmall, screen)
 
-            selectionRectBorder = pygame.draw.rect(screen, (255, 84, 5), pygame.Rect(
-                (w/15)-5, currMenuSelection.y+2, 415, 80), 1, 8)
-            pygame.gfxdraw.box(screen, pygame.Rect(
-                (w/15)-5, currMenuSelection.y+2, 414, 79), (0, 0, 0, 7))
+            selectionRectBorder = pygame.draw.rect(screen, (255, 60, 5), pygame.Rect(
+                (w/15)-5, currMenuSelection.y-10, 475, 80), 1, 8)
+            selectionRectFill = pygame.gfxdraw.box(screen, pygame.Rect(
+                (w/15)-5, currMenuSelection.y-10, 475, 79), (0, 0, 0, 7))
             mousePos = pygame.mouse.get_pos()
 
             for btn in menuSelections:
@@ -609,17 +697,19 @@ def main():
                         if btn.Hover(mousePos):
                             if btn.name == "play":
                                 menuPlay = True
-                            elif btn.name == "opt":
-                                menuOpt = True
+                            elif btn.name == "rules":
+                                menuRules = True
+                            elif btn.name == "controls":
+                                menuControls = True
                             elif btn.name == "quit":
                                 menuQuit = True
                     # if rect1.collidepoint(pygame.mouse.get_pos()):
                     #     print("Mouse clicked on the rect")
 
                 if event.type == pygame.KEYDOWN:
-                    # if event.key == pygame.K_ESCAPE:
-                    #     running = False
-                    #     pygame.quit()
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                        pygame.quit()
 
                     if event.key == pygame.K_DOWN:
                         if menuSelections.index(currMenuSelection) + 1 == len(menuSelections):
@@ -639,26 +729,58 @@ def main():
                         if currMenuSelection.name == "play":
                             menuPlay = True
 
-                        if currMenuSelection.name == "opt":
-                            menuOpt = True
-                        # if currMenuSelection.name == "leaderboard":
-                        #     pass
-                        if currMenuSelection.name == "quit":
+                        elif currMenuSelection.name == "rules":
+                            menuRules = True
+                        
+                        elif currMenuSelection.name == "ctrl":
+                            menuControls = True
+
+                        elif currMenuSelection.name == "leaderboard":
+                            menuLeaderboard = True
+                        elif currMenuSelection.name == "quit":
                             menuQuit = True
+
+                        if leaderboardOpen: # draw over main menu
+                            menuLeaderboard = False
+                            leaderboardOpen = False
+
+                        elif controlsOpen: # draw over main menu
+                            menuControls = False
+                            leaderboardOpen = False
+
+                        elif rulesOpen: # draw over main menu
+                            menuRules = False
+                            leaderboardOpen = False
             if menuPlay:
                 pygame.mixer.pause()
                 mainMenuActive = False
                 gameActive = True
                 menuPlay = False
-            if menuOpt:
-                pass
-            if menuQuit:
+
+            elif menuRules:
+                rulesOpen = True
+                rulesScreen.Show()
+                backBtn.draw(arcadeFont60, screen, (0,0,0))
+
+            elif menuControls:
+                controlsOpen = True
+                controlsScreen.Show()
+                backBtn.draw(arcadeFont60, screen, (0,0,0)) 
+
+            elif menuLeaderboard:
+                leaderboardOpen = True
+                leaderboard.Show()
+                backBtn.draw(arcadeFont60, screen, (0,0,0))
+
+            elif menuQuit:
                 running = False
                 pygame.quit()
 
+
+################################################################## GAME ACTIVE
         elif gameActive:
             if charges <= 0:
-                endCause = "wumpus"
+                endCause = "charge"
                 gameActive = False
                 gameOver = True
             screen.blit(main_bg, (1, 1))
@@ -677,53 +799,55 @@ def main():
                         isCharging = True
 
                     if event.key == pygame.K_LEFT:
+                        turns += 1
                         if isCharging:
                             print("charge left")
                             charges -= 1
                             chargeRes = Charge(
                                 0, currNode, charges, wumpusInstance.pos, graph)
 
-                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
+                        currNode, wumpusDistance, lionDistance, batDistance = validInputReceived(
                             graph,
                             currNode,
                             0,
                             wumpusInstance,
-                            pits,
+                            lions,
                             bats,
                             playerInstance,
                         )
 
                     if event.key == pygame.K_UP:
+                        turns += 1
                         if isCharging:
                             print("charge up")
                             charges -= 1
                             chargeRes = Charge(
                                 1, currNode, charges, wumpusInstance.pos, graph)
 
-                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
+                        currNode, wumpusDistance, lionDistance, batDistance = validInputReceived(
                             graph,
                             currNode,
                             1,
                             wumpusInstance,
-                            pits,
+                            lions,
                             bats,
                             playerInstance,
                         )
 
                     if event.key == pygame.K_RIGHT:
-
+                        turns += 1
                         if isCharging:
                             print("charge right")
                             charges -= 1
                             chargeRes = Charge(
                                 2, currNode, charges, wumpusInstance.pos, graph)
 
-                        currNode, wumpusDistance, pitDistance, batDistance = validInputReceived(
+                        currNode, wumpusDistance, lionDistance, batDistance = validInputReceived(
                             graph,
                             currNode,
                             2,
                             wumpusInstance,
-                            pits,
+                            lions,
                             bats,
                             playerInstance)
                     if isCharging:
@@ -733,12 +857,12 @@ def main():
                             chargeRes = None
 
                         elif chargeRes == True:
-                            endCause == "slayed"
+                            endCause = "slayed"
                             gameActive = False
                             gameOver = True
                     else:
                         colObj = playerInstance.detectHazardCollision(
-                            currNode, wumpusInstance, pits, bats)
+                            currNode, wumpusInstance, lions, bats)
 
                     if colObj != "null":
                         startTime = time.time()
@@ -748,9 +872,9 @@ def main():
                             gameActive = False
                             gameOver = True
 
-                        elif colObj.type == "pit":
-                            print(f"just hit a PIT at {colObj.pos}")
-                            endCause = "pit"
+                        elif colObj.type == "lion":
+                            print(f"just hit a LION at {colObj.pos}")
+                            endCause = "lion"
                             gameActive = False
                             gameOver = True
                             # initGame = True
@@ -765,22 +889,22 @@ def main():
                             # batTextTime = time.time()
                             showBatMoveText = True
 
-            if showPitDeathText:
-                showTimedText(400, 300, 10, "just hit a PIT oof",
-                              fontColour, font, screen, startTime)
+            # if showlionDeathText:
+            #     showTimedText(400, 300, 10, "just hit a lion oof",
+            #                   fontColour, font, screen, startTime)
 
-            elif showBatMoveText:
+            if showBatMoveText:
                 pass
                 showTimedText(400, 100, 1, batImg, fontColour,
                               font, screen, startTime)
             else:
-                showPitDeathText = False
+                showLionDeathText = False
                 showBatMoveText = False
 
             hazardDistance = {'wumpusDistance': wumpusDistance,
-                              'pitDistance': pitDistance, 'batDistance': batDistance}
+                              'lionDistance': lionDistance, 'batDistance': batDistance}
 
-            showText(currNode, w, h, fontColour, font,
+            showText(currNode, w, h, fontColour, arcadeFontSmall,
                      screen, graph, hazardDistance, charges)
 
         frameCount += fps  # delete later unless i actually use it
@@ -798,6 +922,7 @@ if __name__ == "__main__":
     print('Course: ' + __course__)
     print('Date: ' + __date__)
     print('Description: ' + __description__)
+    print(__info__)
     print("\n")
     print("Python " + __pyver__)
     print("Pygame " + __pygamever__)
