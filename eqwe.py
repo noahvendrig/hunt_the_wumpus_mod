@@ -6,6 +6,8 @@ cave = {1: [2, 3, 4], 2: [1, 5, 6], 3: [1, 7, 8], 4: [1, 9, 10], 5: [2, 9, 11],
         19: [14, 16, 20], 20: [17, 18, 19]}
 
 # bfs = breadth_first_search(player_pos, target, cave)
+
+
 def findPlayer(graph, start, end):
     # maintain a queue of paths
     queue = []
@@ -28,9 +30,11 @@ def findPlayer(graph, start, end):
 
 playerpos = 3
 wumpuspos = 10
-path = findPlayer(cave, playerpos, wumpuspos) #RETURNS THE PATH BETWEEN WUMPUS AND PLAYER
+# RETURNS THE PATH BETWEEN WUMPUS AND PLAYER
+path = findPlayer(cave, playerpos, wumpuspos)
 
-wumpuspos = path[1] #update the wumpus' position to the next node in the path. we use index one since the path is a list and the next node is the second index.
+# update the wumpus' position to the next node in the path. we use index one since the path is a list and the next node is the second index.
+wumpuspos = path[1]
 
 print(path)
 # print(bfs)
