@@ -308,7 +308,7 @@ class Leaderboard(): # Class for the leaderboard
     def __init__(self, screen, regularFont, smallFont):
         self.font = regularFont
         self.smallFont = smallFont #using two different fonts so this is the smaller one
-        self.scores = [10,12,3,8,5,6,7,8] # scores starts as an empty list
+        self.scores = [] # scores starts as an empty list
         self.screen = screen
         self.maxScores = 7 # only 7 scores max allowed on the screen
         
@@ -405,9 +405,6 @@ def main():
     #     enablePrint()
     # else:
     #     blockPrint()
-
-    batSound = pygame.mixer.Sound("./audio/bat.mp3")
-    wumpusSound = pygame.mixer.Sound("./audio/wumpus.mp3")
     # lionSound = pygame.mixer.music("./audio/lion.mp3")
     menuSound = pygame.mixer.Sound("./audio/menu.mp3")
     victorySound = pygame.mixer.Sound("./audio/victory.mp3")
