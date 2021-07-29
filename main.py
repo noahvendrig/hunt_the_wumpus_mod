@@ -542,13 +542,13 @@ def main():
     rulesScreen = Rules(screen, arcadeFontMedium, arcadeFontExtraSmall, gradientBg)
 
 ####################################################################################
-    try:
-        while running:  # while the game is running,
+    try: # try and except incase there are problems with running, the error can be caught and the program can be exited
+        while running:  # while the game is running - MAIN GAMELOOP
 
             if initGame:  # we need to initialise the game when we first start it up or restart. This just runs in the background while the menu is open so the game is already created when the user clicks play
                 print("---------------------------GAME STARTED-----------------------------")
-                score = 0
-                turns = 0
+                score = 0 # reset value
+                turns = 0 # reset value
                 batsNum = 2  # number of bats to be generated
                 lionNum = 2  # number of lions to be generated
                 resultAdded = False
@@ -567,15 +567,18 @@ def main():
 
                 currNode = playerInstance.pos
                 # print(f"initial {currNode = }")
-                bats = []  # empty list fo
-                lions = []
+                bats = []  # empty list where instances will be added
+                lions = [] # "" "" "" ""
+
+                # TODO ability to add more wumpus' (or in my case Philistine armies) to the game to increase difficulty.
                 # wumpusNum = 1
                 # wumpusNodes = []
-                playVictoryMusic = True
-
+        
                 # for w in range(wumpusNum):
                 #     wumpusInstance = wumpus()
                 #     wumpusNodes.append(wumpusInstance.pos)
+
+
                 # used for testing to keep track of the locations of the bats (for debugging)
                 batNodes = []
                 # used for testing to keep track of the locations of the lions (for debugging)
@@ -665,7 +668,7 @@ def main():
                         pygame.quit()
 
                     if event.type == pygame.KEYDOWN:
-                        pygame.mixer.pause()
+                        pygame.mixer.stop()
                         if event.key == pygame.K_ESCAPE:
                             running = False
                             pygame.quit()

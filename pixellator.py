@@ -3,11 +3,13 @@
 
 from PIL import Image
 def Pixellate(imgPath, size):
-    path = 'img/mod100.png'
+    savePath = 'img/pixellated.png'
     img = Image.open(imgPath)
     pixImg = img.resize((size,size), Image.BILINEAR)
     result = pixImg.resize(img.size, Image.NEAREST)
-    result.save(path)
-    # result.show()
-    return path
+    result.save(savePath)
+    result.show()
+    return savePath
+
+pixellatedImgPath = Pixellate("path_to_image", 128)
 
