@@ -2,7 +2,7 @@
 
 
 ## Description
-Samson is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973). Further details can be found [on my website](noahvendrig.com#portfolio)
+Samson is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973). Further details can be found [on my website](http://noahvendrig.com#portfolio)
 
 ## Screenshots
 ![main](https://user-images.githubusercontent.com/69784959/127313881-9c5252ba-4a17-4699-a2a3-3c156279709d.png)
