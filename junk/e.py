@@ -19,7 +19,15 @@
 # # print('Date: ' + __date__)
 # # print('Description: ' + __description__)
 # # print('# ' + '=' * 78)
-
+def checkNearby():
+    hazardPositions.extend(bats) # list of all bat instances
+    hazardPositions.extend(lions) # list of all lion instances
+    hazardPositions.extend(philistineInstance)
+    nearby = []
+    for instance in hazardPositions:
+        if instance.pos in graph[playerPos]:
+            nearby.append(instance)
+    return nearby
 
 # # ########################################################################################################################
 # graph = {

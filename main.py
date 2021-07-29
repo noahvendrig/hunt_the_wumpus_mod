@@ -1,23 +1,22 @@
 __author__ = 'Noah Vendrig'
 __license__ = 'MIT'  # copy of the license available @ https://prodicus.mit-license.org/
-__version__ = '4.3'
+__version__ = '4.8'
 __email__ = 'noah.vendrig@education.nsw.gov.au'
 __github__ = "github.com/noahvendrig"  # @noahvendrig
 __course__ = 'Software Design and Development'
 __date__ = '30/07/2021'
 __description__ = '\'Samson\' is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973)'
-__info__ = "info available at: noahvendrig.com/#about"  # some info available here
+__info__ = "info available at: https://github.com/noahvendrig/hunt_the_wumpus_mod/blob/main/readme.md"  # some info available here
 __pyver__ = '3.8.10'
 __pygamever__ = '2.0.1'
 # ====================================== Imports ======================================
 # pygame 2.0.1 (SDL 2.0.14, Python 3.8.10)
 import pygame
-# from sys import exit, float_repr_style
 import sys
 import os
 from sys import *
 import random
-from pygame.locals import *
+# from pygame.locals import *
 import re
 import time
 import ctypes
@@ -25,39 +24,39 @@ import pygame.gfxdraw
 # =====================================================================================
 
 
-class hazard:  # create a hazard class for all hazards (wumpus, bats cave)
+class Hazard:  # create a hazard class for all hazards (philistine, bats cave)
     def __init__(self):  # function that activates on start
         # self.type = "hazard"
         self.pos = getRandomNode()  # set the position to a random node in the graph
         self.alertDistance = 1
 
 
-class wumpus(hazard):
+class Philistine(Hazard):  # philistine class
     def __init__(self):
-        hazard.__init__(self)
-        self.type = "wumpus"
+        Hazard.__init__(self)
+        self.type = "philistine"
 
 
-class Lion(hazard):
-    def __init__(self):
-        hazard.__init__(self)
+class Lion(Hazard): # lion class
+    def __init__(self): 
+        Hazard.__init__(self)
         self.type = "lion"
 
 
-class bat(hazard):
+class Bat(Hazard): # bat class
     def __init__(self):
-        hazard.__init__(self)
+        Hazard.__init__(self)
         self.type = "bat"
 
 
-class player:
+class player: # player class 
     def __init__(self):
         self.type = "player"
         self.pos = getRandomNode()
 
-    def detectHazardCollision(self, playerPos, wumpusInstance, lions, bats):
-        if playerPos in [wumpusInstance.pos]:
-            return wumpusInstance
+    def detectHazardCollision(self, playerPos, philistineInstance, lions, bats):
+        if playerPos in [philistineInstance.pos]:
+            return philistineInstance
 
         for lion in lions:
             if playerPos == lion.pos:
@@ -71,15 +70,9 @@ class player:
             return "null"
 
 
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
 
 
-def enablePrint():
-    sys.stdout = sys.__stdout__
-
-
-def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
+def getChildren(graph, nodesAtLevel, hazardPos, currLevel): # BFS
     visited = []  # set visited to empty again
     currLevel += 1  # increase level number.
     for node in nodesAtLevel:
@@ -104,7 +97,7 @@ def getChildren(graph, nodesAtLevel, hazardPos, currLevel):
         return currLevel
 
 
-def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
+def showTimedText(x, y, duration, content, fontColour, font, screen, startTime): # not needed
     # text = None
     # if isinstance(content, (float, int, str, list, dict, tuple)):
 
@@ -122,17 +115,17 @@ def showTimedText(x, y, duration, content, fontColour, font, screen, startTime):
         # pygame.display.update()
 
 
-def validInputReceived(graph, currNode, keyNum, wumpusInstance, lions, bats, playerInstance):
+def validInputReceived(graph, currNode, keyNum, philistineInstance, lions, bats, playerInstance):
 
     currNode = changeNode(graph, currNode, keyNum)
-    wumpusDist = min(findHazard(graph, currNode, wump.pos)
-                     for wump in [wumpusInstance])  # change to wumpus list
-    # wumpusDist = findHazard(graph, currNode, wumpusInstance.pos)
+    philistineDist = min(findHazard(graph, currNode, wump.pos)
+                     for wump in [philistineInstance])  # change to philistine list
+    # philistineDist = findHazard(graph, currNode, philistineInstance.pos)
     lionDist = min([findHazard(graph, currNode, lion.pos) for lion in lions])
     batDist = min([findHazard(graph, currNode, bat.pos) for bat in bats])
     # print(f"{lionDist = }")
     # print(f"{batDist = }")
-    return currNode, wumpusDist, lionDist, batDist
+    return currNode, philistineDist, lionDist, batDist
 
 
 def findHazard(graph, playerPos, hazardPos):
@@ -140,8 +133,8 @@ def findHazard(graph, playerPos, hazardPos):
     currLevel = 0
     distance = 0
 
-    if playerPos != hazardPos:
-        distance = getChildren(graph, [playerPos], hazardPos, currLevel)
+    if playerPos != hazardPos: 
+        distance = getChildren(graph, [playerPos], hazardPos, currLevel) # search for the hazard (calling the BFS)
     else:
         distance = 0
 
@@ -156,7 +149,7 @@ def changeNode(graph, currNode, direction):  # direction: 0 = left, 1 = middle, 
 
 
 def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance, charges):
-    tH = h/2 - 75
+    tH = h/2 - 75 # tH = text height
     roomL_X = 400
     roomL_Y = tH
     roomM_X = 885
@@ -175,7 +168,7 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance, ch
         if hazardDistance[key] == 1:
             displayAdjustment = 700
             x_distTxt = h/10
-            if key == "wumpusDistance":
+            if key == "philistineDistance":
 
                 distanceTxt = font.render(
                     "The Philistines are nearby...",
@@ -251,7 +244,7 @@ def showText(currNode, w, h, fontColour, font, screen, graph, hazardDistance, ch
     screen.blit(charge_Txt, (roomM_X, 925))
 
 
-def getRandomNode():
+def getRandomNode(): # generate a random node
     num = random.randint(1, 20)
     node = "n" + str(num)
     return node
@@ -269,7 +262,7 @@ def showBat(screen, batImg):
     pygame.display.update()
 
 
-class TextObj():
+class TextObj(): # class for text or buttons
     def __init__(self, name, x, y, txt, w=1920, h=1080):
         self.x = x
         self.y = y
@@ -287,25 +280,24 @@ class TextObj():
             # pygame.draw.rect(screen, (0,0,255),self.x, self.y, 100, 100, 1)
             posRect = pygame.draw.rect(screen, [0, 0, 0], [self.x-17, self.y-5, 200,75], 3, 2)
 
-    def Hover(self, mousePos):
+    def Hover(self, mousePos): # detect hover of mouse over the rect
         if self.posRect.collidepoint(mousePos):
             return True
         else:
             return False
 
 
-def Charge(direction, playerPos, charges, wumpusPos, graph):
+def Charge(direction, playerPos, charges, philistinePos, graph):
     print(f"{playerPos= }")
     print(f"{graph[playerPos][direction] = }")
-    if charges >= 0:
-        if wumpusPos == graph[playerPos][direction]:
-            print("##   charge hit work")
-            return True
+    if charges >= 0: # just incase charges is <= 0 and isnt detected for some reason
+        if philistinePos == graph[playerPos][direction]: # check if the player charged into where the philistine army is
+            return True # if so then the charge succeeded
 
         else:
-            return False
+            return False # didnt succeed
     else:
-        return False
+        return False # didnt succeed
 
 class Leaderboard(): # Class for the leaderboard
     def __init__(self, screen, regularFont, smallFont, bg):
@@ -352,7 +344,7 @@ class Leaderboard(): # Class for the leaderboard
         self.screen.blit(title, (250,90)) # draw the title
 
 
-class Controls():
+class Controls(): #class for controls menu screen
     def __init__(self, screen, regularFont, smallFont, bg):
         self.screen = screen
         self.font = regularFont
@@ -370,7 +362,7 @@ class Controls():
         for str in text:
             if len(str) > 80:
                 h += 100
-                slice1 = str[0:74]
+                slice1 = str[0:74] #slice string to 74 characters and then the rest
                 slice2 = str[74:] # not expecting more than 150 characters in a string
                 textObj1 = TextObj("text", 50, h, slice1)
                 h+=60
@@ -385,7 +377,7 @@ class Controls():
 
             self.screen.blit(title, (250,90)) #draw title
 
-class Rules():
+class Rules(): # class for rules screen
     def __init__(self, screen, regularFont, extraSmallFont, bg):
         self.screen = screen
         self.font = regularFont
@@ -407,7 +399,7 @@ class Rules():
         for str in text:
             if len(str) > 91:
                 h += 70
-                slice1 = str[0:90]
+                slice1 = str[0:90] # slice the string into the first 90 characters and then the rest of the characters
                 slice2 = str[90:] # not expecting more than 200 characters in a string
                 textObj1 = TextObj("text", 20, h, slice1)
                 h+=40
@@ -423,8 +415,8 @@ class Rules():
 
         self.screen.blit(title, (100,50)) #draw title
 def main():
-
-    graph = {
+ 
+    graph = { #graph of the cave system
         "n1": ["n2", "n5", "n8"],
         "n2": ["n10", "n3", "n1"],
         "n3": ["n2", "n4", "n12"],
@@ -462,8 +454,11 @@ def main():
         1)  # get the resolution of the user's computer
     if screenSize[0]/screenSize[1] != 16/9:  # if the resolution is not 16:9
         # TODO: make the game window size shrink so that a 16:9 ratio is maintained but fill the excess with a black background
-        w = screenSize[0]  # width of the screen
-        h = screenSize[1]  # height of the screen
+        try:
+            w = 1920  # width of the screen
+            h = 1080  # height of the screen
+        except ValueError as e:
+            print("PROBLEM WITH SCREEN RESOLUTION", e)
     else:
         w = screenSize[0]  # width of the screen
         h = screenSize[1]  # height of the screen
@@ -489,7 +484,7 @@ def main():
     arcadeFontExtraSmall = pygame.font.Font("font/arcade.ttf", (int((w+h)/120)))
     # currNode = "n1"  # set the starting node
     # settings: ##########################################################
-    # set frames per second of the game (not really important since there aren't any animations however it is needed for the game clock)
+    # set frames per second of the game (not really important since there aren't any animations however it is needed for the game clock) # clock is only really needed for keeping track of time which isn't currently needed however it could be a future feature
     fps = 25
 
     ################################################
@@ -520,8 +515,8 @@ def main():
     showBatMoveText = False
     # Text needed for the main menu
     # Create instances of a TextObj which is used to display text on the screen (in this case the buttons and title text)
-    titleText = TextObj("title", w/14, (h/4)-20, "SAMSON", w, h)
-    playBtn = TextObj("play", w/14, (h/4)+62, "Play", w, h)
+    titleText = TextObj("title", w/14, (h/4)-20, "SAMSON", w, h) # new textobj for the title
+    playBtn = TextObj("play", w/14, (h/4)+62, "Play", w, h) # etc for the other buttons
     rulesBtn = TextObj("rules", w/14, (h/4)+140, "Rules", w, h)
     leaderboardBtn = TextObj("leaderboard",w/14, (h/4)+230, "Leaderboard", w,h)
     controlsBtn = TextObj("ctrl", w/14, (h/4)+320, "Controls", w, h)
@@ -559,24 +554,24 @@ def main():
                 # add the player's starting position to the list of filled nodes (so we don't try to add hazards onto it.)
                 filledNodes.append(playerInstance.pos)
 
-                wumpusInstance = wumpus()  # create an instance of the wumpus class
-                # make sure the wumpus is not on the same node as another object in the game(as the player)
-                while wumpusInstance.pos in filledNodes:
-                    wumpusInstance.pos == getRandomNode()
-                filledNodes.append(wumpusInstance.pos)
+                philistineInstance = Philistine()  # create an instance of the philistine class
+                # make sure the philistine is not on the same node as another object in the game(as the player)
+                while philistineInstance.pos in filledNodes:
+                    philistineInstance.pos == getRandomNode()
+                filledNodes.append(philistineInstance.pos)
 
                 currNode = playerInstance.pos
                 # print(f"initial {currNode = }")
                 bats = []  # empty list where instances will be added
                 lions = [] # "" "" "" ""
 
-                # TODO ability to add more wumpus' (or in my case Philistine armies) to the game to increase difficulty.
-                # wumpusNum = 1
-                # wumpusNodes = []
+                # TODO ability to add more philistine' (or in my case Philistine armies) to the game to increase difficulty.
+                # philistineNum = 1
+                # philistineNodes = []
         
-                # for w in range(wumpusNum):
-                #     wumpusInstance = wumpus()
-                #     wumpusNodes.append(wumpusInstance.pos)
+                # for w in range(philistineNum):
+                #     philistineInstance = philistine()
+                #     philistineNodes.append(philistineInstance.pos)
 
 
                 # used for testing to keep track of the locations of the bats (for debugging)
@@ -586,7 +581,7 @@ def main():
 
                 # create the specified amount bat instances and add them to the bat list
                 for b in range(batsNum):
-                    batInstance = bat()  # create new bat instance
+                    batInstance = Bat()  # create new bat instance
 
                     # make sure the bats is not on the same node as another object in the game(as the player)
                     while batInstance.pos in filledNodes:
@@ -601,7 +596,7 @@ def main():
                 for p in range(lionNum):
                     lionInstance = Lion()  # create new bat instance
 
-                    # make sure the wumpus is not on the same node as another object in the game(as the player)
+                    # make sure the philistine is not on the same node as another object in the game(as the player)
                     while lionInstance.pos in filledNodes:
                         # set the instances position to another random node
                         lionInstance.pos = getRandomNode()
@@ -610,21 +605,22 @@ def main():
                     filledNodes.append(lionInstance.pos)
                     lionNodes.append(lionInstance.pos)
 
+                # print for testing and dev purposes
                 print(f"{filledNodes = }")
-                print(f"{wumpusInstance.pos = }")
+                print(f"{philistineInstance.pos = }")
 
                 print(f"{lionNodes = }")
                 print(f"{batNodes = }")
 
-                wumpusDistance = min(findHazard(graph, currNode, wump.pos) for wump in [  # min depth of all the possible paths to the wumpus to find the shortest distance
-                                    wumpusInstance])  # returns wumpus distance from spawn.
+                philistineDistance = min(findHazard(graph, currNode, wump.pos) for wump in [  # min depth of all the possible paths to the philistine to find the shortest distance
+                                    philistineInstance])  # returns philistine distance from spawn.
                 lionDistance = min([findHazard(graph, currNode, lion.pos)  # returns lion distance from spawn. (for all lions)
                                 for lion in lions])
                 batDistance = min([findHazard(graph, currNode, bat.pos)  # returns bat distance from spawn. (for all lions)
                                 for bat in bats])
 
                 colObj = playerInstance.detectHazardCollision(  # Check if the player is currently in the same node as a hazard
-                    currNode, wumpusInstance, lions, bats)
+                    currNode, philistineInstance, lions, bats)
                 if colObj != "null":
                     # raise an exception since this shouldn't have happened, since the player shouldn't be in the same node as a hazard and show the object the player collided with.
                     # colObj is the object the player collided with
@@ -654,36 +650,38 @@ def main():
                 leaderboardOpen = False
                 controlsOpen = False
                 rulesOpen = False
+                playVictoryMusic = True
 
             if gameOver:  # when the game has ended
-                score = (1/turns)*10000 # calculate the score by doing inverse of the amt of turns taken to defeat wumpus (so that less turns = higher scores then multiply by 10000 to get a bigger number
-                if resultAdded == False:
-                    leaderboard.AddResult(score)  # add the score to the leaderboard
-                    resultAdded = True
-                msg2 = "error"  # default message to display
+                
+                msg2 = "error"  # default message to display, if this is displayed then there are serious problems
                 msg1 = "shoot"
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:  # close when x button hit
-                        running = False
+                        running = False 
                         pygame.quit()
 
-                    if event.type == pygame.KEYDOWN:
+                    if event.type == pygame.KEYDOWN: # detect key press
                         pygame.mixer.stop()
                         if event.key == pygame.K_ESCAPE:
-                            running = False
+                            running = False # terminate the loop, end the game
                             pygame.quit()
                         else:
                             # pygame.mixer.pause()
-                            initGame = True
-                            mainMenuActive = True
-                            gameOver = False
+                            initGame = True #setup new game
+                            mainMenuActive = True #activate main menu
+                            gameOver = False # game is over and don't show the game screen anymore
                             gameActive = False
-                if endCause == "slayed":
+                if endCause == "slayed": # if the player slayed the army of philistines
                     msg1 = "Congratulations!"
                     msg2 = f"You have won the game with a score of {int(score)}!"
+                    score = (1/turns)*10000 # calculate the score by doing inverse of the amt of turns taken to defeat philistine (so that less turns = higher scores then multiply by 10000 to get a bigger number
+                    if resultAdded == False:
+                        leaderboard.AddResult(score)  # add the score to the leaderboard
+                        resultAdded = True # set to false so it doesn't play repeatedly. oh how I love while loops
                     if playVictoryMusic:
                         victorySound.play()
-                        playVictoryMusic = False
+                        playVictoryMusic = False # set to false so it doesn't play repeatedly. oh how I love while loops
                 else:
                     msg1 = "Game Over!"
 
@@ -693,7 +691,7 @@ def main():
                     elif endCause == "lion":
                         msg2 = "A Mystical lion appeared out of nowhere and killed you"
                         screen.blit(lionImg, (1,1))
-                    elif endCause == "wumpus":
+                    elif endCause == "philistine":
                         msg2 = "You accidentally stumbled upon an army of Philistines! You died!"
                     else:
                         raise ValueError(f"{endCause = }")
@@ -701,20 +699,18 @@ def main():
                 text1 = arcadeFontMedium.render(msg1, True, (255, 255, 255))
                 text2 = arcadeFontSmall.render(msg2, True, (255, 255, 255))
                 text3 = arcadeFontSmall.render(msg3, True, (255, 255, 255))
-                screen.fill((0, 0, 0))
+
+                screen.blit(gradientBg, (1,1))
                 screen.blit(text1, (100, 300))
                 screen.blit(text2, (100, 600))  # draw on screen
                 screen.blit(text3, (100, 900))
-
-                # initGame = True
-                # mainMenuActive = True
 
             if mainMenuActive:
                 
                 pygame.mixer.unpause() #unpause the mixer so music starts playing again
                 screen.blit(menuBg, (1, 1)) # blit the menu BG image to the screen first (so FG gets drawn over it)
 
-                titleText.draw(arcadeFont60, screen, (0, 0, 0))
+                titleText.draw(arcadeFont60, screen, (0, 0, 0)) # draw all the menu buttons on the screen
                 playBtn.draw(arcadeFont60, screen)
                 rulesBtn.draw(arcadeFont60, screen)
                 leaderboardBtn.draw(arcadeFont60, screen)
@@ -724,16 +720,16 @@ def main():
 
                 versionText.draw(arcadeFontSmall, screen)
 
-                selectionRectBorder = pygame.draw.rect(screen, (255, 60, 5), pygame.Rect(
+                selectionRectBorder = pygame.draw.rect(screen, (255, 60, 5), pygame.Rect( #border of rectangle which shows which menu button is selected
                     (w/15)-5, currMenuSelection.y-10, 475, 80), 1, 8)
-                selectionRectFill = pygame.gfxdraw.box(screen, pygame.Rect(
+                selectionRectFill = pygame.gfxdraw.box(screen, pygame.Rect( #fill of rectangle which shows which menu button is selected
                     (w/15)-5, currMenuSelection.y-10, 475, 79), (0, 0, 0, 7))
                 mousePos = pygame.mouse.get_pos()
 
                 for btn in menuSelections:
-                    if btn.Hover(mousePos):
+                    if btn.Hover(mousePos): #check if the players mouse is hovering over the button
                         # print(btn.name, "hovered")
-                        currMenuSelection = btn
+                        currMenuSelection = btn #set the current menu selection to the button that the player is hovering over
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:  # close when x button hit
@@ -741,7 +737,7 @@ def main():
                         pygame.quit()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         try:
-                            if backBtn.Hover(mousePos):
+                            if backBtn.Hover(mousePos): #if clicked on back button
                                 menuRules = False
                                 menuControls = False
                                 menuLeaderboard = False
@@ -749,7 +745,7 @@ def main():
                             pass # means that the back button isn't active yet
                             
                         for btn in menuSelections:
-                            if btn.Hover(mousePos):
+                            if btn.Hover(mousePos): # if clicked on a menu button
                                 if btn.name == "play":
                                     menuPlay = True
                                 elif btn.name == "rules":
@@ -769,29 +765,27 @@ def main():
                             pygame.quit()
 
                         if event.key == pygame.K_DOWN:
-                            if menuSelections.index(currMenuSelection) + 1 == len(menuSelections):
+                            if menuSelections.index(currMenuSelection) + 1 == len(menuSelections): #reached the last button in the list of buttons, go back to the top one
                                 currMenuSelection = menuSelections[0]
                             else:
-                                currMenuSelection = menuSelections[menuSelections.index(
+                                currMenuSelection = menuSelections[menuSelections.index( #go to the next menu button in the list
                                     currMenuSelection) + 1]
                             # print(currMenuSelection.name)
                         if event.key == pygame.K_UP:
-                            if menuSelections.index(currMenuSelection) + -1 == 0:
-                                currMenuSelection = menuSelections[0]
-                            else:
-                                currMenuSelection = menuSelections[menuSelections.index(
-                                    currMenuSelection) - 1]
+                            currMenuSelection = menuSelections[menuSelections.index(
+                                currMenuSelection) - 1] #go to the previous menu button in the list
+                            # print(currMenuSelection.name)
 
                         if event.key == pygame.K_RETURN:
                             if currMenuSelection.name == "play":
-                                menuPlay = True
+                                menuPlay = True # Play
 
                             elif currMenuSelection.name == "rules":
                                 menuRules = True
                             
                             elif currMenuSelection.name == "ctrl":
-                                menuControls = True
-
+                                menuControls = True 
+ 
                             elif currMenuSelection.name == "leaderboard":
                                 menuLeaderboard = True
                             elif currMenuSelection.name == "quit":
@@ -809,25 +803,25 @@ def main():
                                 menuRules = False
                                 rulesOpen = False
                 if menuPlay:
-                    pygame.mixer.pause()
+                    pygame.mixer.pause() # pause the music
                     mainMenuActive = False
                     gameActive = True
                     menuPlay = False
 
-                elif menuRules:
+                elif menuRules: #enable the rules page
                     rulesOpen = True
-                    rulesScreen.Show()
-                    backBtn.draw(arcadeFont60, screen, (0,0,0), True)
+                    rulesScreen.Show() # show the rules screen
+                    backBtn.draw(arcadeFont60, screen, (0,0,0), True) # draw the back btn on the screen
 
-                elif menuControls:
+                elif menuControls: #enable the controls page
                     controlsOpen = True
-                    controlsScreen.Show()
-                    backBtn.draw(arcadeFont60, screen, (0,0,0), True) 
+                    controlsScreen.Show() #show the controls screen
+                    backBtn.draw(arcadeFont60, screen, (0,0,0), True) # draw the back btn on the screen
 
-                elif menuLeaderboard:
+                elif menuLeaderboard: #enable the leaderboard page
                     leaderboardOpen = True
-                    leaderboard.Show()
-                    backBtn.draw(arcadeFont60, screen, (0,0,0), True)
+                    leaderboard.Show() # show the leaderboard
+                    backBtn.draw(arcadeFont60, screen, (0,0,0), True) # draw the back btn on the screen
 
                 elif menuQuit:
                     running = False
@@ -838,11 +832,11 @@ def main():
 
     ################################################################## GAME ACTIVE
             elif gameActive:
-                if charges <= 0:
+                if charges <= 0: #when the player has run out of charges, end the game
                     endCause = "charge"
                     gameActive = False
                     gameOver = True
-                screen.blit(main_bg, (1, 1))
+                screen.blit(main_bg, (1, 1)) # bkit the main background to the screen
 
                 # screen.fill(bgColour)  # fill before anything else
                 for event in pygame.event.get():
@@ -854,93 +848,90 @@ def main():
                         if event.key == pygame.K_ESCAPE:
                             running = False
                             pygame.quit()
-                        if event.key == pygame.K_LSHIFT:
-                            isCharging = True
+                        if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                            isCharging = True # player is charging this turn since they hit left shift but also add functionality for the right shift incase the user didnt listen to the instructions. fool proof
 
                         if event.key == pygame.K_LEFT:
-                            turns += 1
+                            turns += 1 # add 1 to total turns
                             if isCharging:
-                                print("charge left")
-                                charges -= 1
-                                chargeRes = Charge(
-                                    0, currNode, charges, wumpusInstance.pos, graph)
+                                charges -= 1 # reduce charges by 1
+                                chargeRes = Charge( # charge!!!!
+                                    0, currNode, charges, philistineInstance.pos, graph)
 
-                            currNode, wumpusDistance, lionDistance, batDistance = validInputReceived(
+                            currNode, philistineDistance, lionDistance, batDistance = validInputReceived( # figure out the players distance to all the hazards
                                 graph,
                                 currNode,
                                 0,
-                                wumpusInstance,
+                                philistineInstance,
                                 lions,
                                 bats,
                                 playerInstance,
                             )
 
                         if event.key == pygame.K_UP:
-                            turns += 1
+                            turns += 1 # add 1 to total turns
                             if isCharging:
-                                print("charge up")
-                                charges -= 1
-                                chargeRes = Charge(
-                                    1, currNode, charges, wumpusInstance.pos, graph)
+                                charges -= 1 # reduce charges by 1
+                                chargeRes = Charge( # charge!!!!
+                                    1, currNode, charges, philistineInstance.pos, graph)
 
-                            currNode, wumpusDistance, lionDistance, batDistance = validInputReceived(
+                            currNode, philistineDistance, lionDistance, batDistance = validInputReceived( # figure out the players distance to all the hazards
                                 graph,
                                 currNode,
                                 1,
-                                wumpusInstance,
+                                philistineInstance,
                                 lions,
                                 bats,
                                 playerInstance,
                             )
 
                         if event.key == pygame.K_RIGHT:
-                            turns += 1
+                            turns += 1 # add 1 to total turns
                             if isCharging:
-                                print("charge right")
-                                charges -= 1
-                                chargeRes = Charge(
-                                    2, currNode, charges, wumpusInstance.pos, graph)
+                                charges -= 1 # reduce charges by 1
+                                chargeRes = Charge( # charge!!!!
+                                    2, currNode, charges, philistineInstance.pos, graph)
 
-                            currNode, wumpusDistance, lionDistance, batDistance = validInputReceived(
+                            currNode, philistineDistance, lionDistance, batDistance = validInputReceived( # figure out the players distance to all the hazards
                                 graph,
                                 currNode,
                                 2,
-                                wumpusInstance,
+                                philistineInstance,
                                 lions,
                                 bats,
                                 playerInstance)
                         if isCharging:
                             if chargeRes == False:
                                 print("charge FAILED")
-                                isCharging = None
+                                isCharging = None #reset incase we want to charge again
                                 chargeRes = None
 
                             elif chargeRes == True:
-                                endCause = "slayed"
+                                endCause = "slayed" #game ends, player won!
                                 gameActive = False
                                 gameOver = True
-                        else:
-                            
-                            colObj = playerInstance.detectHazardCollision(
-                                currNode, wumpusInstance, lions, bats)
+                        
+                        if chargeRes != True:  # only if the charge was unsuccessful or didnt happen
+                            colObj = playerInstance.detectHazardCollision( # check if the player collided with anything during their turn
+                                currNode, philistineInstance, lions, bats)
 
-                        if colObj != "null":
+                        if colObj != "null": # if we have hit something...
 
-                            startTime = time.time()
-                            if colObj.type == "wumpus":
-                                endCause = "wumpus"
-                                print(f"just hit the WUMPUS at {colObj.pos}")
+                            # startTime = time.time()  not needed since there is no timed text anymore
+                            if colObj.type == "philistine": #checking the type attribute of collided object which will always be an isntance of hazard (which has type attribute)
+                                endCause = "philistine" # died from the philistine army
+                                print(f"just hit the philistine at {colObj.pos}")
                                 gameActive = False
                                 gameOver = True
 
-                            elif colObj.type == "lion":
+                            elif colObj.type == "lion": # collided instance is a lion
                                 
                                 print(f"just hit a LION at {colObj.pos}")
-                                endCause = "lion"
+                                endCause = "lion" # died from a lion
                                 gameActive = False
                                 gameOver = True
 
-                            elif colObj.type == "bat":
+                            elif colObj.type == "bat": # collided instance is a bat
                                 print(f"just hit a BAT at {colObj.pos}")
                                 currNode = getRandomNode()
                                 while currNode in filledNodes:
@@ -948,27 +939,27 @@ def main():
                                 # batTextTime = time.time()
                                 showBatMoveText = True
 
-                if showBatMoveText:
-                    pass
-                    showTimedText(400, 100, 1, batImg, fontColour,
-                                font, screen, startTime)
-                else:
-                    showLionDeathText = False
-                    showBatMoveText = False
+                # if showBatMoveText: not needed since no more timed text
+                #     pass
+                #     showTimedText(400, 100, 1, batImg, fontColour,
+                #                 font, screen, startTime)
+                # else:
+                #     showLionDeathText = False
+                #     showBatMoveText = False
 
-                hazardDistance = {'wumpusDistance': wumpusDistance,
+                hazardDistance = {'philistineDistance': philistineDistance, # list of all harzard distances to the player
                                 'lionDistance': lionDistance, 'batDistance': batDistance}
 
-                showText(currNode, w, h, fontColour, arcadeFontSmall,
+                showText(currNode, w, h, fontColour, arcadeFontSmall, # show all the text needed for the gameplay (current room, adjacent room, etc))
                         screen, graph, hazardDistance, charges)
 
-            clock.tick(fps)
+            clock.tick(fps) # tick the clock but not really needed since no timed text
             pygame.display.update() #update display
-    except Exception as e:
-        print(f"ERROR, PLEASE RESTART GAME {e}")
+    except ValueError as e: # use ValueError instead of Exception so we can get the line numbers
+        print(f"ERROR: {e}")  # print the error out
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": # start the script !!
     print('Author: ' + __author__)
     print('License: ' + __license__)
     print('Version: ' + __version__)
