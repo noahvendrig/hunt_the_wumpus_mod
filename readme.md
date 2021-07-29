@@ -3,6 +3,9 @@
 
 ## Description
 Samson is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973). Further details can be found [on my website](http://noahvendrig.com#portfolio)
+It takes ideas from the biblical figure Samson and the player is controlling Samson, who must navigate a network of caves in hopes of escaping. The hazards present in the cave include 2 lions (pits in the original HTW), 2 groups of bats (same as original HTW) and an army of Philistines (Wumpus in HTW). 
+To eliminate the army of Philistines (to win the game), Samson has a limited ability (5 uses only) – A charge which when charging into a cave full of Philistines will eliminate them all. To successfully do this, the charge must be executed from an adjacent cave to the Philistines. If the player runs out of charges, they will lose the game as the enemies can no longer be defeated. If the player accidentally walks into a cave with the Philistines or a lion, they will lose. If the player walks into a cave with bats, they will be transported to a random cave in the network.
+Points are rewarded for the shortest number of moves required to eliminate the Philistine Army. 
 
 ## Screenshots
 ![main](https://user-images.githubusercontent.com/69784959/127539731-77e2b5c0-8572-4a60-9633-94f9bbb18917.png)
