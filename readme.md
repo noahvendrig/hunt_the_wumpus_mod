@@ -2,12 +2,18 @@
 
 
 ## Description
-Samson is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973). Further details can be found [on my website](noahvendrig.com#portfolio)
+Samson is a Modern Recreation of text-based adventure game Hunt the Wumpus (1973). Further details can be found [on my website](http://noahvendrig.com#portfolio)
 
 ## Screenshots
-![main](https://user-images.githubusercontent.com/69784959/127313881-9c5252ba-4a17-4699-a2a3-3c156279709d.png)
+![main](https://user-images.githubusercontent.com/69784959/127539731-77e2b5c0-8572-4a60-9633-94f9bbb18917.png)
 
-![gameplay](https://user-images.githubusercontent.com/69784959/127314132-a218f9d0-bccc-46e1-a444-555b7192d6ed.png)
+![gameplay](https://user-images.githubusercontent.com/69784959/127539738-225fd676-4418-4405-8bb6-fdf42daa7859.png)
+![](https://user-images.githubusercontent.com/69784959/127314132-a218f9d0-bccc-46e1-a444-555b7192d6ed.png)
+![](https://user-images.githubusercontent.com/69784959/127539742-9a2c0511-8a38-424c-8241-16b94e2d8680.png)
+![](https://user-images.githubusercontent.com/69784959/127539746-ec86090f-6581-42f8-84d3-eafc09795301.png)
+![](https://user-images.githubusercontent.com/69784959/127539748-85682cc6-4d00-4e32-b8d8-80fa7f7ac200.png)
+![](https://user-images.githubusercontent.com/69784959/127539754-206d77d9-02e4-41fe-92d0-98eeaa5c8e4f.png)
+
 ## Requirements and Installation
 
 Python Version >= [3.8.10](https://www.python.org/downloads/release/python-3810/)\
