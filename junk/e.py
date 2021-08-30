@@ -1,3 +1,5 @@
+print(1/0)
+
 # # import random
 # # import pygame
 # # __author__ = 'Noah Vendrig'
@@ -19,9 +21,11 @@
 # # print('Date: ' + __date__)
 # # print('Description: ' + __description__)
 # # print('# ' + '=' * 78)
+
+
 def checkNearby():
-    hazardPositions.extend(bats) # list of all bat instances
-    hazardPositions.extend(lions) # list of all lion instances
+    hazardPositions.extend(bats)  # list of all bat instances
+    hazardPositions.extend(lions)  # list of all lion instances
     hazardPositions.extend(philistineInstance)
     nearby = []
     for instance in hazardPositions:
