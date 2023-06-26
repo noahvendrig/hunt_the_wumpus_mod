@@ -453,10 +453,14 @@ def main():
     screenSize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(
         1)  # get the resolution of the user's computer
     if screenSize[0]/screenSize[1] != 16/9:  # if the resolution is not 16:9
+        print("Eeeee")
         # TODO: make the game window size shrink so that a 16:9 ratio is maintained but fill the excess with a black background
         try:
-            w = 1920  # width of the screen
-            h = 1080  # height of the screen
+            #w = 1920  # width of the screen
+            #h = 1080  # height of the screen
+            w=1920
+            h=1000
+            DISPLAYSURF = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         except ValueError as e:
             print("PROBLEM WITH SCREEN RESOLUTION", e)
     else:
